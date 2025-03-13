@@ -1,0 +1,12 @@
+com\mycompany\java_game_project\GameObjects.class
+com\mycompany\java_game_project\Enemy.class
+com\mycompany\java_game_project\GameMenu\MainGame.class
+com\mycompany\java_game_project\EnemyType.class
+com\mycompany\java_game_project\Stages\Stage1.class
+com\mycompany\java_game_project\Player.class
+com\mycompany\java_game_project\Direction.class
+com\mycompany\java_game_project\DroppedItem.class
+com\mycompany\java_game_project\Java_Game_Project.class
+com\mycompany\java_game_project\Combat.class
+com\mycompany\java_game_project\Map.class
+com\mycompany\java_game_project\GameState.class
