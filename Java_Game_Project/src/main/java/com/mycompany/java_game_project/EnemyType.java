@@ -9,9 +9,13 @@ package com.mycompany.java_game_project;
  * @author trist
  */
 public enum EnemyType {
-    ZOMBIE(100, 10, 5),
-    SLIME(68, 5, 1),
-    DEMON(150, 20, 3);
+    ZOMBIE(50, 5, 5),
+    SLIME(10, 2, 0),
+    GOBLIN(20, 5, 3),
+    MONKEY(30, 10, 3),
+    LIZARDMAN(50, 15, 5),
+    DEMON(150, 20, 3),
+    DRAGON(500, 50, 100);
     
     private final int health;
     private final int attack;
@@ -34,5 +38,5 @@ public enum EnemyType {
     public int getAttack() { 
         return attack; 
     }
-    
+
 }
