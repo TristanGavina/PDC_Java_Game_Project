@@ -14,35 +14,43 @@ public abstract class GameObjects {
     protected int health;
     protected int defense;
     protected int attack;
-    public String name;
     
-    public GameObjects(int health, int defense, int attack){
-        //this.x = x;
-        //this.y = y;
+    public GameObjects(int health, int attack, int defense){
         this.health = health;
-        this.defense = defense;
         this.attack = attack;
+        this.defense = defense;
+        
         
     }
+    
     public void takeDamage(int damage){
         health = Math.max(health - damage, 0);
         if(health <= 0){
             System.out.println(this.getClass().getSimpleName() + " Felled");
         } else {
-            System.out.println(this.getClass().getSimpleName() + " took " + damage + " damage!. Remaining HP: " + health);
+            System.out.println(this.getClass().getSimpleName() + " took " + damage + " damage! \nRemaining HP: " + health);
         }
     }
     
-    public abstract void draw();
-
-    
-    /**
-    public void move(int dx, int dy){
-        x += dx;
-        y += dy;
-        System.out.println("Moved to (" + x + ", " + y + ")");
+    public int getHealth() {
+        return health;
     }
-    */
+
+    public int getDefense() {
+        return defense;
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+    
+    public void attack(GameObjects  target){
+        int damageDealt = Math.max(attack - target.defense, 1);
+        System.out.println(this.getClass().getSimpleName() + " attacks for " + damageDealt + " damage!");
+        target.takeDamage(damageDealt);
+    }
+    
+    public abstract void draw();
 }
     
     
