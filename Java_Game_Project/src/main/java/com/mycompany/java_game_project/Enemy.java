@@ -4,8 +4,6 @@
  */
 package com.mycompany.java_game_project;
 
-import com.mycompany.java_game_project.EnemyType;
-
 /**
  *
  * @author trist
@@ -13,20 +11,35 @@ import com.mycompany.java_game_project.EnemyType;
 
 public class Enemy extends GameObjects{
     public EnemyType type; 
+    private int currentHp;
     
     public Enemy(EnemyType type) {
         super( type.getHealth(), type.getDefense(), type.getAttack());
         this.type = type;
+        this.currentHp = currentHp;
+    }
+    
+    @Override
+    public void takeDamage(int damage){
+        health = Math.max(health - damage, 0);
+        if(health <= 0){
+            System.out.println(type + " has been killed!");
+        } else {
+            System.out.println(type + " took " + damage + " damage! \nRemaining HP: " + health);
+        }
     }
     
     @Override
     public void draw() {
         System.out.println("Drawing Enemy: " + type + " with " + health + " HP, " + defense + " Def, " + attack + " ATK.");
     }
-    
-    public void attack(Player player){
-        int damageDealt = Math.max(attack - player.defense, 1);
-        System.out.println(type + " attacks for " + damageDealt + " damage!");
-        player.takeDamage(damageDealt);
+
+    public EnemyType getType() {
+        return type;
     }
+    
+    public int getCurrentHp(){
+        return currentHp;
+    }
+
 }
