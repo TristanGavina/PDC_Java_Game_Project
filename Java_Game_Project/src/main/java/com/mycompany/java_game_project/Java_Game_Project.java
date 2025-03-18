@@ -8,13 +8,12 @@ package com.mycompany.java_game_project;
  * @author trist
  */
 
-import com.mycompany.java_game_project.GameMenu.MainGame;
-import com.mycompany.java_game_project.GameMenu.MainGame;
 import java.util.Scanner;
     
 public class Java_Game_Project {
     
     private Scanner scan;
+    private Player player;
 
     public Java_Game_Project() {
         
@@ -31,7 +30,7 @@ public class Java_Game_Project {
         try{
             int option = Integer.parseInt(s.trim());
             switch(option){
-            case 1 -> new MainGame(scan).startGame();
+            case 1 -> startGame();
             
             case 2 -> System.out.println("Invalid input!"); //new LoadGame().loadGame();
                 
@@ -44,6 +43,25 @@ public class Java_Game_Project {
         }
     }
         
+    private void startGame(){
+        System.out.println("-------------------------");
+        System.out.println("Welcome to Tristan PDC project 1!");
+        System.out.println("A turn-based game with the goal to defeat the final boss");
+        System.out.println("-------------------------");
+        
+        System.out.println("Please enter your name: ");
+        String name = scan.nextLine();
+        this.player = new Player(name);
+        
+        System.out.println("Welcome to the first stage " + player.getName() + ".");
+        System.out.println("KAWASAKI\nKRICO\nESTRIPER");
+        System.out.println("");
+        int currentStage = 1;
+        
+        Encounter encounter = new Encounter(name, currentStage);
+        encounter.encountered();
+        }
+    
     private void quitGame(){
             System.out.println("Closing Game...!");
             System.exit(0);
@@ -51,6 +69,7 @@ public class Java_Game_Project {
     
     public static void main(String[] args) {
         new Java_Game_Project();
+        
     }
 }
 
