@@ -5,7 +5,7 @@
 package com.mycompany.java_game_project;
 
 /**
- *
+ * show stats FIle i/o
  * @author trist
  */
 public class Player extends GameObjects{
@@ -15,31 +15,36 @@ public class Player extends GameObjects{
         super(100, 10, 5);
         this.name = name;
     }
-    
-    /**
-    @Override
-    public void move(int dx, int dy){
-        x += dx;
-        y += dy;
-        System.out.println(name + "Move");
+    public String getName(){
+        return name;
     }
-    */
+    
+    @Override
+    public int getHealth(){
+        return health;
+    }
     
     @Override
     public void draw() {
         System.out.println("Player: " + name + " has: " + health + " HP, " + defense + " Def, " + attack + " ATK.");
     }
     
-    
-    public void attack(Enemy enemy){
-        int damageDealt = Math.max(attack - enemy.defense, 1);
-        System.out.println(name + " attacks for " + damageDealt + " damage!");
-        enemy.takeDamage(damageDealt);
-    }
-    /**
+    @Override
     public void takeDamage(int damage){
-        
+        health = Math.max(health - damage, 0);
+        if(health <= 0){
+            System.out.println("YOU DIED!!!");
+            System.out.println("GAME OVER!!!");
+        } else {
+            System.out.println(getName() + " took " + damage + " damage!. Remaining HP: " + health);
+        }
     }
-    */
+    
+    public void attack(Enemy target){
+        int damageDealt = Math.max(attack - target.defense, 1);
+        System.out.println(getName() + " attacks for " + damageDealt + " damage!");
+        target.takeDamage(damageDealt);
+    }
+    
  }
 
