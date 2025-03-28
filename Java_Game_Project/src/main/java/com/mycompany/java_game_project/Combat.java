@@ -4,72 +4,106 @@
  */
 package com.mycompany.java_game_project;
 
-
 /**
+ * file i/o battle log
  *
  * @author trist
  */
 import java.util.Scanner;
 
 public final class Combat {
-    private boolean fighting;
+
+    private boolean inCombat = false;
     private final Scanner scan;
-    private final Player player;
+    private final GameObjects player;
     private final Enemy currentEnemy;
-    
-            
-    public Combat(Player player, Enemy currentEnemy){
+
+    public Combat(GameObjects player, Enemy currentEnemy) {
         scan = new Scanner(System.in);
         this.player = player;
         this.currentEnemy = currentEnemy;
-        this.fighting = true;
-        
+        this.inCombat = true;
+        startCombat();
+
     }
-    
-    void startCombat(){
-        System.out.println(player.getName() + " has encountered an " + currentEnemy.getType());
-        System.out.println("-------------------------");
-        System.out.println("Choose!");
-        System.out.println("(1) Attack");
-        System.out.println("(2) Defend");
-        System.out.println("(3) Heal");
-        System.out.println("(4) Run");
-        System.out.println("-------------------------");
-        String s = scan.nextLine();
-        while(fighting){
-            try{
-                int option = Integer.parseInt(s.trim());
-                switch(option){
-                case 1: //attack
-                     player.attack(currentEnemy);
-                            if (currentEnemy.getHealth() <= 0) {
-                                System.out.println("-----You defeated the " + currentEnemy.getType() + "!-----");
-                                fighting = false;
-                                break;
-                            }
 
-                case 2: //defend
-                    break;
+    void startCombat() {
 
-                case 3: //heal
-                    break;
+        while (inCombat) {
 
-                case 4: //run
+            menu();
+            try {
+                int choice = Integer.parseInt(scan.nextLine().trim());
+                switch (choice) {
+                    case 1: //attack
+                        player.attack(currentEnemy);
+                        break;
+                    case 2: //defend
+                        break;
 
-                default:
-                    System.out.println("Invalid input!");
-                    break;
-                }   
-            } catch(NumberFormatException e){
-                System.out.println("Invalid input. Not an integer");
+                    case 3: //heal
+                        break;
+
+                    case 4: //run
+
+                    default:
+                        System.out.println("Invalid input!");
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error" + e.getMessage());
             }
+
+            //enemy attack player
+            if (currentEnemy.getHealth() > 0) {
+                currentEnemy.attack(player);
+            }
+
+            checkContinue();
         }
-        
-        
-        //enemy attack player
-        currentEnemy.attack(player);
     }
-    public static void main(String[] args) {
-        
+
+    private void checkContinue() {
+        if (currentEnemy.getHealth() <= 0) {
+            inCombat = false;
+            menu();
+        }
+    }
+
+    public void menu() {
+        System.out.print("""
+            _____________________________________________
+           |                                             |
+           |              CHOOSE ACTION!!!               |
+           |_____________________________________________|
+           |                                             |
+           |       Press [1] ATTACK                      |
+           |                                             |
+           |       Press [2] DEFEND                      |
+           |                                             |
+           |       Press [3] HEAL                        |
+           |                                             |
+           |       Press [4] RUN                         |
+           |_____________________________________________|
+           |=============================================|
+           """);
+        if (player.getHealth() <= 0) {
+            System.out.println("|       YOU HAVE BEEN KILLED!           |");
+        } else {
+            System.out.println(player.draw());
+        }
+
+        System.out.println("|_____________________________________________|");
+
+        if (currentEnemy.getHealth() <= 0) {
+            System.out.println("|   ENEMY: " + currentEnemy.type + " DEFEATED!");
+        } else {
+            System.out.println(currentEnemy.draw());
+        }
+
+        System.out.println("""
+                           |=============================================|
+                           |_____________________________________________|\n
+                           """);
     }
 }
