@@ -4,6 +4,8 @@
  */
 package com.mycompany.java_game_project;
 
+import java.util.Scanner;
+
 
 /**
  *
@@ -12,7 +14,8 @@ package com.mycompany.java_game_project;
 public class Encounter {
     private final Player player;
     private Combat combat;
-    private final int stage;
+    private int stage;
+    private final Scanner cont;
     
     private final Enemy[] stage1Enemies = new Enemy[]{
         new Enemy(EnemyType.SLIME),
@@ -50,20 +53,64 @@ public class Encounter {
         new Enemy(EnemyType.DRAGON)
     };
     
-    public Encounter(String name, int stage) {
-        player = new Player(name); 
-        this.stage = stage;
+    public Encounter(Player player, Scanner cont) {
+        this.player = player;
+        this.cont = cont;
+        this.stage = 1;
     }
     
     public void encountered(){
+
+        while(stage <= 6){
+            Enemy[] setEnemy = stageEnemy(stage);
         
-        Enemy[] setEnemy = stageEnemy(stage);
-        
-        for (Enemy enemy : setEnemy){
-            combat = new Combat(player, enemy);
-            combat.startCombat();
+            for (Enemy enemy : setEnemy){
+                encounterMessage(enemy);
+                combat = new Combat(player, enemy);
+                combat.startCombat();
+                
+            //Print after defeating enemy
+                System.out.println("""
+                                   Would you like to:
+                                      [1] CONTINUE
+                                      [2] REST
+                                      [3] QUIT AND SAVE
+                                   """);
+            
+            try {
+                int choice = Integer.parseInt(cont.nextLine().trim());
+                switch(choice){
+                    case 1:
+                        System.out.println("Continuing stage...");
+                        break;
+
+                    case 2:
+                        System.out.println("Healing to full HP...");
+                        System.out.println("implement full heal");
+                        break;
+
+                    case 3:
+                        System.out.println("SAVING DONT CLOSE...");
+                        Java_Game_Project.quitGame();
+
+                    default:
+                        System.out.println("Invalid input");
+                    }
+                }catch(NumberFormatException e){
+                System.out.println("There was an error " +e.getMessage());
+                }
+            }
+            
+            System.out.println("All enemies in stage " + stage + " have been defeated!");
+            System.out.println("Moving to next stage...");
+            stage++;
+            if(stage <= 6){
+                System.out.println("Welcome to stage: " + stage);
+            }
+            
         }
     }
+    
     
     private Enemy[] stageEnemy(int stage) {
         switch (stage) {
@@ -91,5 +138,19 @@ public class Encounter {
             }
         }
     }
+    
+    private void encounterMessage(Enemy enemy){ // shows 
+        String encounter = player.getName() + " has encountered an " + enemy.getType() + "!";
+
+        int boxWidth = 45;
+        int totalPadding = boxWidth - encounter.length();
+        int leftPadding = totalPadding / 2;
+        int rightPadding = totalPadding - leftPadding;
+
+        System.out.println("\n|=============================================|");
+        System.out.println("|                                             |");
+        System.out.println("|" + " ".repeat(leftPadding) + encounter + " ".repeat(rightPadding) + "|");
+    }
+    
     
 }
