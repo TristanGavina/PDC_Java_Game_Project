@@ -2,55 +2,49 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.java_game_project;
 
+package com.mycompany.java_game_project;
+import java.io.*;
 /**
  * abstract classes exits to be extended, they cannot be instantiated
  * where all shared behaviors is stored
  * @author trist
  */
-public abstract class GameObjects {
+public abstract class GameObjects implements Serializable{
+    private static final long serialVersionUID = 1L;
     //protected int x, y; //position
     protected int health;
-    protected int defense;
     protected int attack;
+    protected int defense;
     
-    public GameObjects(int health, int attack, int defense){
+    public GameObjects(int health, int defense, int attack ){
         this.health = health;
-        this.attack = attack;
         this.defense = defense;
+        this.attack = attack;
         
         
     }
     
-    public void takeDamage(int damage){
-        health = Math.max(health - damage, 0);
-        if(health <= 0){
-            System.out.println(this.getClass().getSimpleName() + " Felled");
-        } else {
-            System.out.println(this.getClass().getSimpleName() + " took " + damage + " damage! \nRemaining HP: " + health);
-        }
-    }
-    
+    public abstract void takeDamage(int damage);
+
     public int getHealth() {
         return health;
     }
-
+    
+    public int getAttack() {
+            return attack;
+        }
+    
     public int getDefense() {
         return defense;
     }
 
-    public int getAttack() {
-        return attack;
-    }
     
-    public void attack(GameObjects  target){
-        int damageDealt = Math.max(attack - target.defense, 1);
-        System.out.println(this.getClass().getSimpleName() + " attacks for " + damageDealt + " damage!");
-        target.takeDamage(damageDealt);
-    }
     
-    public abstract void draw();
+    public abstract void attack(GameObjects  target); //
+    
+    public abstract String draw(); //overrite to print stats
+
 }
     
     
