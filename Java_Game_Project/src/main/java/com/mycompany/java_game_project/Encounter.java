@@ -2,61 +2,47 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.java_game_project;
 
-import java.util.Scanner;
+package com.mycompany.java_game_project;
+import java.io.*;
 
 
 /**
- *
+ * This class handles and stores encounters for each stages
  * @author trist
  */
-public class Encounter {
+public class Encounter implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Player player;
     private Combat combat;
     private int stage;
-    private final Scanner cont;
+    private int enemies;
+    private final UserInputs input;
+    private final GameUI ui;
+    private EnemyType defeatedLast;
     
-    private final Enemy[] stage1Enemies = new Enemy[]{
-        new Enemy(EnemyType.SLIME),
-    };
+    private Enemy[] stageEnemy(int stage) {
+        // Dynamically create enemies for the current stage
+        return switch (stage) {
+            case 1 -> new Enemy[]{new Enemy(EnemyType.SLIME, ui)};
+            case 2 -> new Enemy[]{new Enemy(EnemyType.SLIME, ui), new Enemy(EnemyType.GOBLIN, ui)};
+            case 3 -> new Enemy[]{new Enemy(EnemyType.SLIME, ui), new Enemy(EnemyType.GOBLIN, ui), new Enemy(EnemyType.ZOMBIE, ui)};
+            case 4 -> new Enemy[]{new Enemy(EnemyType.SLIME, ui), new Enemy(EnemyType.GOBLIN, ui), new Enemy(EnemyType.ZOMBIE, ui), new Enemy(EnemyType.MONKEY, ui)};
+            case 5 -> new Enemy[]{new Enemy(EnemyType.SLIME, ui), new Enemy(EnemyType.GOBLIN, ui), new Enemy(EnemyType.ZOMBIE, ui), new Enemy(EnemyType.MONKEY, ui), new Enemy(EnemyType.LIZARDMAN, ui), new Enemy(EnemyType.DEMON, ui)};
+            case 6 -> new Enemy[]{new Enemy(EnemyType.DRAGON, ui)};
+            default -> {
+                System.out.println("INVALID STAGE!");
+                yield new Enemy[0];  // Returns empty array if stage is invalid
+            }
+        };
+    }
     
-    private final Enemy[] stage2Enemies = new Enemy[]{
-        new Enemy(EnemyType.SLIME),
-        new Enemy(EnemyType.GOBLIN),
-    };
-    
-    private final Enemy[] stage3Enemies = new Enemy[]{
-        new Enemy(EnemyType.SLIME),
-        new Enemy(EnemyType.GOBLIN),
-        new Enemy(EnemyType.ZOMBIE)
-    };
-    
-    private final Enemy[] stage4Enemies = new Enemy[]{
-        new Enemy(EnemyType.SLIME),
-        new Enemy(EnemyType.GOBLIN),
-        new Enemy(EnemyType.ZOMBIE),
-        new Enemy(EnemyType.MONKEY)
-    };
-    
-    private final Enemy[] stage5Enemies = new Enemy[]{
-        new Enemy(EnemyType.SLIME),
-        new Enemy(EnemyType.GOBLIN),
-        new Enemy(EnemyType.ZOMBIE),
-        new Enemy(EnemyType.MONKEY),
-        new Enemy(EnemyType.LIZARDMAN),
-        new Enemy(EnemyType.DEMON)
-        
-    };
-    
-    private final Enemy[] bossStage = new Enemy[]{
-        new Enemy(EnemyType.DRAGON)
-    };
-    
-    public Encounter(Player player, Scanner cont) {
+    public Encounter(Player player, UserInputs input, GameUI ui) {
         this.player = player;
-        this.cont = cont;
+        this.input = input;
         this.stage = 1;
+        this.ui = ui;
+        this.enemies = 0;
     }
     
     public void encountered(){
@@ -64,93 +50,74 @@ public class Encounter {
         while(stage <= 6){
             Enemy[] setEnemy = stageEnemy(stage);
         
-            for (Enemy enemy : setEnemy){
-                encounterMessage(enemy);
-                combat = new Combat(player, enemy);
+            for (int i = enemies; i < setEnemy.length; i++) {
+                enemies = i;
+                Enemy enemy = setEnemy[i];
+                ui.encounterMessage(player.getName(), enemy.getType());
+                combat = new Combat(player, enemy, input, ui);
                 combat.startCombat();
+                setDefeatedLast(enemy.getType());
+
                 
-            //Print after defeating enemy
-                System.out.println("""
-                                   Would you like to:
-                                      [1] CONTINUE
-                                      [2] REST
-                                      [3] QUIT AND SAVE
-                                   """);
-            
-            try {
-                int choice = Integer.parseInt(cont.nextLine().trim());
-                switch(choice){
-                    case 1:
-                        System.out.println("Continuing stage...");
-                        break;
+                ui.playerContinue();
+                
+                try {
+                    int choice = Integer.parseInt(input.getInput());
+                    switch (choice) {
+                        case 1 -> System.out.println("Continuing stage " + stage + "...");
 
-                    case 2:
-                        System.out.println("Healing to full HP...");
-                        System.out.println("implement full heal");
-                        break;
+                        case 2 -> {
+                            //rest
+                            System.out.println("Healing to full HP...");
+                            System.out.println("implement full heal");
+                        }
 
-                    case 3:
-                        System.out.println("SAVING DONT CLOSE...");
-                        Java_Game_Project.quitGame();
+                        case 3 -> {
+                            //save and quit
+                            enemies++;
+                            Java_Game_Project.game = SaveHandler.game; // Make sure current game instance is used
+                            SaveHandler.saveGame();
+                            ui.quitGame();
+                            return;
+                        }
 
-                    default:
-                        System.out.println("Invalid input");
+                        default -> ui.invalidInput("Only chose 1-3");
                     }
-                }catch(NumberFormatException e){
-                System.out.println("There was an error " +e.getMessage());
+                } catch (NumberFormatException e) {
+                    ui.invalidInput(e.getMessage());
                 }
             }
             
             System.out.println("All enemies in stage " + stage + " have been defeated!");
             System.out.println("Moving to next stage...");
             stage++;
+            enemies = 0;
             if(stage <= 6){
                 System.out.println("Welcome to stage: " + stage);
             }
-            
         }
     }
-    
-    
-    private Enemy[] stageEnemy(int stage) {
-        switch (stage) {
-            case 1 -> {
-                return stage1Enemies;
-            }
-            case 2 -> {
-                return stage2Enemies;
-            }
-            case 3 -> {
-                return stage3Enemies;
-            }
-            case 4 -> {
-                return stage4Enemies;
-            }
-            case 5 -> {
-                return stage5Enemies;
-            }
-            case 6 -> {
-                return bossStage;
-            }
-            default -> {
-                System.out.println("INVALID STAGE!");
-                return new Enemy[0];
-            }
-        }
+    public int getStage(){
+        return stage;
+    }
+
+    public int getEnemies() {
+        return enemies;
+    }
+    //set last defeated enemy
+    public void setDefeatedLast(EnemyType type){
+        this.defeatedLast = type;
+    }
+    //get last defeated enemy
+    public EnemyType getDefeatedLast(){
+        return defeatedLast;
     }
     
-    private void encounterMessage(Enemy enemy){ // shows 
-        String encounter = player.getName() + " has encountered an " + enemy.getType() + "!";
-
-        int boxWidth = 45;
-        int totalPadding = boxWidth - encounter.length();
-        int leftPadding = totalPadding / 2;
-        int rightPadding = totalPadding - leftPadding;
-
-        System.out.println("\n|=============================================|");
-        System.out.println("|                                             |");
-        System.out.println("|" + " ".repeat(leftPadding) + encounter + " ".repeat(rightPadding) + "|");
+    public int getTotalEnemiesInStage() {
+        return stageEnemy(stage).length;
     }
-    
-    
+
+    public int getRemainingEnemies() {
+        return getTotalEnemiesInStage() - enemies;
+    }
 }
