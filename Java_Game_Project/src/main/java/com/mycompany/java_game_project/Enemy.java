@@ -3,35 +3,38 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.java_game_project;
-
+import java.io.*;
 /**
- *
+ * This class 
  * @author trist
  */
 
-public class Enemy extends GameObjects{
-    public EnemyType type; 
-    private int currentHp;
+public class Enemy extends GameObjects implements Serializable{
+    private static final long serialVersionUID = 1L;
     
-    public Enemy(EnemyType type) {
+    public EnemyType type; 
+    private final GameUI ui;
+    
+    public Enemy(EnemyType type, GameUI ui) {
         super( type.getHealth(), type.getDefense(), type.getAttack());
         this.type = type;
-        this.currentHp = currentHp;
+        this.health = type.getHealth();
+        this.ui = ui;
     }
     
     @Override
     public void takeDamage(int damage){
         health = Math.max(health - damage, 0);
         if(health <= 0){
-            System.out.println(type + " has been killed!");
+            ui.enemyKilled(type);
         } else {
-            System.out.println(type + " took " + damage + " damage! \nRemaining HP: " + health);
+            ui.enemyTakeDamage(type, damage, health);
         }
     }
     
     @Override
-    public void draw() {
-        System.out.println("Drawing Enemy: " + type + " with " + health + " HP, " + defense + " Def, " + attack + " ATK.");
+    public String draw() {
+        return ("| Enemy: " + type + "\n| HP: " + health + "| DEF: " + defense + "| ATTACK: " + attack);
     }
 
     public EnemyType getType() {
@@ -39,7 +42,13 @@ public class Enemy extends GameObjects{
     }
     
     public int getCurrentHp(){
-        return currentHp;
+        return health;
     }
-
+    
+    @Override
+    public void attack(GameObjects target){
+        int damageDealt = Math.max(attack - target.defense, 1);
+        System.out.println("> " + type + " attacks for " + damageDealt + " damage!");
+        target.takeDamage(damageDealt);
+    }
 }
