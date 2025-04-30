@@ -1,0 +1,11 @@
+ _____________________________________________
+|                                             |
+|      Press [4] during combat for help and   |
+|    information about the game and stages.   |  
+|                                             |
+|                  BEWARE!!!                  |
+|    Starting new game will overrite save!!!  |
+|_____________________________________________|
+|                                             |
+|           Press ENTER to continue...        |
+|_____________________________________________|
