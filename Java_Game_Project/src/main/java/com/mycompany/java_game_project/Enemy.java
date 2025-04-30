@@ -13,23 +13,21 @@ public class Enemy extends GameObjects implements Serializable{
     private static final long serialVersionUID = 1L;
     
     public EnemyType type; 
-    private final GameUI ui;
     
-    public Enemy(EnemyType type, GameUI ui) {
+    public Enemy(EnemyType type) {
         super( type.getHealth(), type.getDefense(), type.getAttack());
         this.type = type;
         this.health = type.getHealth();
-        this.ui = ui;
     }
     
     @Override
     public void takeDamage(int damage){
         health = Math.max(health - damage, 0);
-        if(health <= 0){
-            ui.enemyKilled(type);
-        } else {
-            ui.enemyTakeDamage(type, damage, health);
-        }
+//        if(health <= 0){
+//            return type + " FELLED";
+//        } else {
+//            return type + " took " + damage + " damage!\n" + type + " remaining HP: " + health;
+//        }
     }
     
     @Override
@@ -41,14 +39,15 @@ public class Enemy extends GameObjects implements Serializable{
         return type;
     }
     
-    public int getCurrentHp(){
+    @Override
+    public int getHealth(){
         return health;
     }
     
     @Override
-    public void attack(GameObjects target){
-        int damageDealt = Math.max(attack - target.defense, 1);
-        System.out.println("> " + type + " attacks for " + damageDealt + " damage!");
+    public int attack(GameObjects target){
+        int damageDealt = Math.max(attack - target.getDefense(), 1);
         target.takeDamage(damageDealt);
+        return damageDealt;
     }
 }

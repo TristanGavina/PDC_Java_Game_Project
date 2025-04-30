@@ -8,7 +8,7 @@ import java.io.*;
 
 /**
  * need to work on implementing FILE I/O
- * 
+ * THIS IS THE MAIN CLASS
  * @author trist
  */
     
@@ -39,7 +39,7 @@ public final class Java_Game_Project implements Serializable {
                 switch(option){
                 case 1 -> startGame(); //game start
 
-                case 2 -> {
+                case 2 -> { //load game
                     SaveHandler.loadGame();
                     if(SaveHandler.game != null && SaveHandler.game != this) {
                         SaveHandler.game.menu();
@@ -63,10 +63,22 @@ public final class Java_Game_Project implements Serializable {
     }
         
     private void startGame(){ 
-        ui.playerIntro(); //show intro and ask player name
-        String name = input.getInput(); // get user input
+        String name = "";
+        
+        while(true){
+            ui.playerIntro(); //show intro and ask player name
+            name = input.getInput().trim(); // get user input
+            if(name.length() < 3 || name.length() > 7){
+                ui.invalidInput("Sorry name must be 3 to 7 letters only...");
+            } else {
+                break;
+            }
+        }
+        
         player = new Player(name); // store player name
         ui.playerName(name); // show player name
+        ui.gameHelp();
+        input.getInput();
         encounter = new Encounter(player, input, ui); // instantiate encounter class
         encounter.encountered(); // call encountered method in encounter class
         }
@@ -79,16 +91,24 @@ public final class Java_Game_Project implements Serializable {
         game.menu();
     }
     
-    public void resumeGame() {
     // This method will be called when a saved game is loaded
-    if (player != null && encounter != null) {
-        ui.resumeGame(player, encounter);
-        input.getInput();
-        encounter.encountered();
-    } else {
-        ui.loadError("Could not resume game. Start new game...");
-        menu();
+    public void resumeGame() {
+        if (player != null && encounter != null) {
+            String name = player.getName();
+            int currentStage = encounter.getStage();
+            String defeatedLast = (encounter.getDefeatedLast() != null) ? encounter.getDefeatedLast().toString() : "";
+            int enemiesRemaining = encounter.getRemainingEnemies();
+            ui.resumeGame(name, currentStage, defeatedLast, enemiesRemaining);
+            input.getInput();
+            encounter.encountered();
+        } else {
+            ui.loadError("Could not resume game. Start new game...");
+            menu();
+        }
     }
-}
+    
+    
+    
+    
 }
 

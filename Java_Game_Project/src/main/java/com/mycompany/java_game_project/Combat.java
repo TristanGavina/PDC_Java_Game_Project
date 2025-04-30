@@ -10,14 +10,14 @@ import java.io.*;
  * @author trist
  */
 
-public final class Combat implements Serializable {
+public class Combat implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private boolean inCombat = false;
-    private transient UserInputs input;
+    private final UserInputs input;
     private final Player player;
     private final Enemy currentEnemy;
-    private transient GameUI ui;
+    private final GameUI ui;
 
     public Combat(Player player, Enemy currentEnemy, UserInputs input, GameUI ui) {
         this.input = input;
@@ -25,42 +25,63 @@ public final class Combat implements Serializable {
         this.currentEnemy = currentEnemy;
         this.inCombat = true;
         this.ui = ui;
-        startCombat();
 
     }
 
-    void startCombat() {
+    public void startCombat() {
 
         while (inCombat) {
-
+            
             ui.combatMenu(player, currentEnemy);
             try {
                 int choice = Integer.parseInt(input.getInput());
                 switch (choice) {
-                    case 1: //attack
-                        player.attack(currentEnemy);
-                        break;
-                    case 2: //defend
-                        break;
+                    case 1 -> {
+                        //attack
+                        int damageDealt = player.attack(currentEnemy);
+                        ui.playerAttack(player.getName(), player.getAttack());
+                        ui.enemyTakeDamage(currentEnemy.getType(), damageDealt, currentEnemy.getHealth());
+                    }
+                    case 2 -> {
+                        //defend
+                        if (!player.isDefending()) {
+                            player.defend();
+                            ui.combatMenu(player, currentEnemy);
+                            ui.playerDefend(player.getName());
+                        } else {
+                            ui.invalidInput(player.getName() + " is already defending!");
+                        }
+                    }
 
-                    case 3: //heal
-                        break;
+                    case 3 -> {
+                        //heal
+                        if(player.getHealth() == player.getMaxHP()){
+                            ui.invalidInput(player.getName() + " is full HP.");
+                        } else {
+                            player.heal();
+                            ui.playerHeal(player.getName());
+                        }
+                    }
 
-                    case 4: //run
-
-                    default:
-                        System.out.println("Invalid input!");
-                        break;
+                    case 4 -> {
+                        //help
+                        continue; //makes enemies not attack
+                    }
+                    default -> ui.invalidInput("Choose only 1 - 4!  Enemy gets a free move.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Error" + e.getMessage());
+                ui.invalidInput(e.getMessage() + " Enemy gets a free move.");
             }
 
             //enemy attack player
             if (currentEnemy.getHealth() > 0) {
-                currentEnemy.attack(player);
+                int enemyAttack = currentEnemy.attack(player);
+                ui.enemyAttack(currentEnemy.getType(), enemyAttack);
+                ui.playerTakeDamage(player.getName(), enemyAttack, player.getHealth());
+                
             }
-
+            //ui.savePlayerRecord(encounter, player);
+            player.defendEnd();
             checkContinue();
         }
     }
@@ -70,11 +91,5 @@ public final class Combat implements Serializable {
             inCombat = false;
             ui.combatMenu(player, currentEnemy);
         }
-    }
-    
-    //Method for re-injecting transient dependencies after loading
-    public void injectDependencies(UserInputs input, GameUI ui){
-        this.input = input;
-        this.ui = ui;
     }
 }

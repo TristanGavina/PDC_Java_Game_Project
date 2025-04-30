@@ -12,24 +12,25 @@ public class SaveHandler implements Serializable {
     private static final long serialVersionUID = 1L;
     static Java_Game_Project game;
     
-        public static void loadGame(){
-            try{
-                FileInputStream fis = new FileInputStream("Game.sav");
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                game = (Java_Game_Project) ois.readObject();
-                ois.close();
-                System.out.println("Game Loaded!");
-                if (game != null) {
-                    game.resumeGame();
-                }
-            } catch(IOException | ClassNotFoundException e){
-                System.out.println("Failed to Load game " + e.getMessage());
-                }
-        }
-        
-        public static void saveGame(){      
+    public static void loadGame(){
         try{
-            FileOutputStream fos = new FileOutputStream("Game.sav");
+            FileInputStream fis = new FileInputStream("GameSaves/Game.sav");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            game = (Java_Game_Project) ois.readObject();
+            ois.close();
+            System.out.println("Game Loaded!");
+            if (game != null) {
+                game.resumeGame();
+            }
+        } catch(IOException | ClassNotFoundException e){
+            System.out.println("Failed to Load game " + e.getMessage());
+            }
+    }
+
+    public static void saveGame(){      
+        //saving whole game
+        try{
+            FileOutputStream fos = new FileOutputStream("GameSaves/Game.sav");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(game);
             oos.flush();

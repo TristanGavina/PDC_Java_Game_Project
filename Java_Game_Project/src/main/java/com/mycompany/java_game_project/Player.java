@@ -12,51 +12,76 @@ import java.io.*;
  */
 public class Player extends GameObjects implements Serializable{
     private static final long serialVersionUID = 1L;
-    public final String name;
-    private final GameUI ui;
+    private final String name;
     
     public Player(String name) {
-        super(100, 5, 10); //HP , DEF, ATK
+        super(100, 0, 10); //HP , DEF, ATK
         this.name = name;
-        this.ui = new GameUI ();
     }
     public String getName(){
         return name;
     }
-    
-    @Override
-    public int getHealth(){
-        return health;
-    }
-    
+
     @Override
     public String draw() {
-        return ("| Player: " + name + "\n| HP: " + health + " | DEF: " + defense + " | ATTACK: " + attack);
+        return "| Player: " + name + "\n| HP: " + health + " | DEF: " + defense + " | ATTACK: " + attack;
     }
     
     @Override
     public void takeDamage(int damage){
         health = Math.max(health - damage, 0); // ensures that hp will not go down 0
-        if(health <= 0){
-            ui.gameOver();
-        } else {
-            ui.playerTakeDamage(name, damage, health);
-        }
+//        if(health <= 0){
+//            return "GAME OVER!";
+//        } else {
+//            return getName() + " has " + health + " health remaining.";
+//        }
     }
     
     @Override
-    public void attack(GameObjects target){ // method for player attack enemy 
-        int damageDealt = Math.max(attack - target.defense, 1); // ensures that player will always do 1 damage
-        System.out.println("> " +getName() + " attacks for " + damageDealt + " damage!");
+    public int attack(GameObjects target){ // method for player attack enemy 
+        int damageDealt = Math.max(attack - target.getDefense(), 1); // ensures that player will always do 1 damage
         target.takeDamage(damageDealt);
-    }
-
-    void defend() { // method for player defends incoming attack (+defense)
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    void heal() { // method for player healing (+hp)
-        throw new UnsupportedOperationException("Not supported yet."); 
+        return damageDealt;
     }
     
+    private boolean defending = false;
+    private final int increaseDef = 5;
+    
+    public void defend() { // method for player defends incoming attack (+defense)
+        if(!isDefending()){
+            defense += increaseDef;
+            defending = true;
+           //return "> " + getName() + " braces for the attack (+5 defense).";
+        } //else {
+            //return "> " + getName()+ "is already bracing for the attack.";
+        //}
+
+    }
+    
+    public boolean isDefending(){
+        return defending;
+    }
+    //makes sure only defends 1 turn
+    public void defendEnd(){
+        if(defending){
+            defense -= increaseDef;
+            defending = false;
+            //return "> " +getName() + " blocked an attack.";
+        }
+        //return null;
+    }
+    
+
+    public void heal() { // method for player healing (+hp)
+//        if(health == maxHP){
+//            return "> " + getName() + " is full HP!";
+//        } else{
+            health = Math.min(health + 10, maxHP); // healing can not go over max hp
+            //return"> " + getName() + " heals for 10HP.";
+        //}
+    }
+    
+    public void healToFull(){
+        this.health = this.maxHP;
+    }
  }

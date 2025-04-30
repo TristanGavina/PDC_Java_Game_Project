@@ -14,15 +14,15 @@ public abstract class GameObjects implements Serializable{
     private static final long serialVersionUID = 1L;
     //protected int x, y; //position
     protected int health;
+    protected int maxHP;
     protected int attack;
     protected int defense;
     
-    public GameObjects(int health, int defense, int attack ){
+    public GameObjects(int health, int defense, int attack){
         this.health = health;
         this.defense = defense;
         this.attack = attack;
-        
-        
+        this.maxHP = health;
     }
     
     public abstract void takeDamage(int damage);
@@ -32,17 +32,20 @@ public abstract class GameObjects implements Serializable{
     }
     
     public int getAttack() {
-            return attack;
+            return attack - defense;
         }
     
     public int getDefense() {
         return defense;
     }
+    
+    public int getMaxHP(){
+        return maxHP;
+    }
 
     
     
-    public abstract void attack(GameObjects  target); //
-    
+    public abstract int attack(GameObjects  target); //    
     public abstract String draw(); //overrite to print stats
 
 }
