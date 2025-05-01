@@ -12,7 +12,6 @@ import java.io.*;
  */
 public abstract class GameObjects implements Serializable{
     private static final long serialVersionUID = 1L;
-    //protected int x, y; //position
     protected int health;
     protected int maxHP;
     protected int attack;

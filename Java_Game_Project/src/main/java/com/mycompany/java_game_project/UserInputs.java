@@ -9,6 +9,7 @@ import java.io.*;
  *
  * @author trist
  */
+
 public interface UserInputs extends Serializable{
     String getInput();
 }

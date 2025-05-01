@@ -4,6 +4,8 @@
  */
 package com.mycompany.java_game_project;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * can do file i/o battle log
  * This class handles combat logic
@@ -18,6 +20,7 @@ public class Combat implements Serializable {
     private final Player player;
     private final Enemy currentEnemy;
     private final GameUI ui;
+    
 
     public Combat(Player player, Enemy currentEnemy, UserInputs input, GameUI ui) {
         this.input = input;
@@ -64,8 +67,9 @@ public class Combat implements Serializable {
                     }
 
                     case 4 -> {
-                        //help
-                        continue; //makes enemies not attack
+                        ui.helpFile();
+                        input.getInput();
+                        continue; //makes enemies not attack / skip turn
                     }
                     default -> ui.invalidInput("Choose only 1 - 4!  Enemy gets a free move.");
                 }
@@ -89,7 +93,6 @@ public class Combat implements Serializable {
     private void checkContinue() {
         if (currentEnemy.getHealth() <= 0) {
             inCombat = false;
-            ui.combatMenu(player, currentEnemy);
         }
     }
 }

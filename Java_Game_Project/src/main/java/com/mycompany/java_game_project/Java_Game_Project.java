@@ -7,7 +7,7 @@ package com.mycompany.java_game_project;
 import java.io.*;
 
 /**
- * need to work on implementing FILE I/O
+ *
  * THIS IS THE MAIN CLASS
  * @author trist
  */
@@ -45,7 +45,7 @@ public final class Java_Game_Project implements Serializable {
                         SaveHandler.game.menu();
                         return;
                     } else {
-                        ui.loadError("No saved game found or error loading game.");
+                        ui.loadError("No saved game found. error loading game.");
                     }
                 }
 
@@ -92,13 +92,13 @@ public final class Java_Game_Project implements Serializable {
     }
     
     // This method will be called when a saved game is loaded
-    public void resumeGame() {
+    public void loadGame() {
         if (player != null && encounter != null) {
             String name = player.getName();
             int currentStage = encounter.getStage();
             String defeatedLast = (encounter.getDefeatedLast() != null) ? encounter.getDefeatedLast().toString() : "";
             int enemiesRemaining = encounter.getRemainingEnemies();
-            ui.resumeGame(name, currentStage, defeatedLast, enemiesRemaining);
+            ui.playerOldRecord(name, currentStage, defeatedLast, enemiesRemaining);
             input.getInput();
             encounter.encountered();
         } else {

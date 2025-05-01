@@ -24,7 +24,7 @@ public class UserInputProvider implements UserInputs, Serializable {
     @Override
     public String getInput(){
         if (scan == null) {
-            scan = new Scanner(System.in); // Reinitialize if deserialized
+            scan = new Scanner(System.in);
         }
         return scan.nextLine().trim();
     }

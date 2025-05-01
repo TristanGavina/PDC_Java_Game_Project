@@ -20,7 +20,7 @@ public class SaveHandler implements Serializable {
             ois.close();
             System.out.println("Game Loaded!");
             if (game != null) {
-                game.resumeGame();
+                game.loadGame();
             }
         } catch(IOException | ClassNotFoundException e){
             System.out.println("Failed to Load game " + e.getMessage());

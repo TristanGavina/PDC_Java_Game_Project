@@ -23,11 +23,6 @@ public class Enemy extends GameObjects implements Serializable{
     @Override
     public void takeDamage(int damage){
         health = Math.max(health - damage, 0);
-//        if(health <= 0){
-//            return type + " FELLED";
-//        } else {
-//            return type + " took " + damage + " damage!\n" + type + " remaining HP: " + health;
-//        }
     }
     
     @Override

@@ -30,11 +30,6 @@ public class Player extends GameObjects implements Serializable{
     @Override
     public void takeDamage(int damage){
         health = Math.max(health - damage, 0); // ensures that hp will not go down 0
-//        if(health <= 0){
-//            return "GAME OVER!";
-//        } else {
-//            return getName() + " has " + health + " health remaining.";
-//        }
     }
     
     @Override
@@ -51,11 +46,7 @@ public class Player extends GameObjects implements Serializable{
         if(!isDefending()){
             defense += increaseDef;
             defending = true;
-           //return "> " + getName() + " braces for the attack (+5 defense).";
-        } //else {
-            //return "> " + getName()+ "is already bracing for the attack.";
-        //}
-
+        } 
     }
     
     public boolean isDefending(){
@@ -66,19 +57,12 @@ public class Player extends GameObjects implements Serializable{
         if(defending){
             defense -= increaseDef;
             defending = false;
-            //return "> " +getName() + " blocked an attack.";
         }
-        //return null;
     }
     
 
     public void heal() { // method for player healing (+hp)
-//        if(health == maxHP){
-//            return "> " + getName() + " is full HP!";
-//        } else{
-            health = Math.min(health + 10, maxHP); // healing can not go over max hp
-            //return"> " + getName() + " heals for 10HP.";
-        //}
+        health = Math.min(health + 10, maxHP); // healing can not go over max hp
     }
     
     public void healToFull(){
