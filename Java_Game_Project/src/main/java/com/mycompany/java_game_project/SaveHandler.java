@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.java_game_project;
+import com.mycompany.java_game_project.GameUI.EncounterUI;
 import java.io.*;
 /**
  *
@@ -12,18 +13,16 @@ public class SaveHandler implements Serializable {
     private static final long serialVersionUID = 1L;
     static Java_Game_Project game;
     
-    public static void loadGame(){
+    public static void loadGame(){ //loading game object
         try{
             FileInputStream fis = new FileInputStream("GameSaves/Game.sav");
             ObjectInputStream ois = new ObjectInputStream(fis);
             game = (Java_Game_Project) ois.readObject();
             ois.close();
             System.out.println("Game Loaded!");
-            if (game != null) {
-                game.loadGame();
-            }
+            resumeGame(game);
         } catch(IOException | ClassNotFoundException e){
-            System.out.println("Failed to Load game " + e.getMessage());
+            game.ih.loadError("Failed to Load game " + e.getMessage());
             }
     }
 
@@ -37,7 +36,52 @@ public class SaveHandler implements Serializable {
             oos.close();
             System.out.println("Saving game...");
         } catch (IOException e){
-                System.out.println("Failed to Save game " + e.getMessage());
+                game.ih.saveError("Failed to Save game " + e.getMessage());
         }
     }
+
+    // resumes where game left off
+    public static void resumeGame(Java_Game_Project game) {
+        if (game.player != null && game.encounter != null) {
+            EncounterUI.loadPlayerProgress();
+            game.input.getInput();
+            game.encounter.encountered();
+        } else {
+            game.ih.loadError("Could not resume game. Start new game...");
+            game.menu();
+        }
+    }
+    private static final String PLAYERRECORD_PATH = "./GameSaves/playerRecord.txt";
+    public static void savePlayerRecord(Encounter encounter, Player player) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PLAYERRECORD_PATH))) {
+            bw.write("|=============================================|\n");
+            bw.write("|                Player Record                \n");
+            bw.write("|           Name: " + player.getName() + "\n");
+            bw.write("|           HP: " + player.getHealth() + "\n");
+            bw.write("|           Defense: " + player.getDefense() + "\n");
+            bw.write("|           Attack: " + player.getAttack() + "\n");
+            bw.write("|           Current Stage: " + encounter.getStage() + "\n");
+            bw.write("|=============================================|\n");
+        } catch (IOException e) {
+            System.out.println("Player record did not save. " + e.getMessage());
+        }
+    }
+
+    private static final String PLAYERPROGRESS_PATH = "./GameSaves/playerProgress.txt";
+    // show player previous progess
+    public static void savePlayerProgress(Encounter encounter, Player player) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PLAYERPROGRESS_PATH))) {
+            bw.write("|=============================================|\n");
+            bw.write("|                Player Progress             \n");
+            bw.write("|           Welcome back: " + player.getName() + "\n");
+            bw.write("|           Resuming from stage: " + encounter.getStage() + "\n");
+            bw.write("|           Last defeated enemy: " + encounter.getDefeatedLast() + "\n");
+            bw.write("|           Number of enemies in this stage: " + encounter.getTotalEnemiesInStage()+ "\n");
+            bw.write("|=============================================|\n");
+        } catch (IOException e) {
+            System.out.println("Error writing player progress to file: " + e.getMessage());
+        }
+    }
+    
+    
 }

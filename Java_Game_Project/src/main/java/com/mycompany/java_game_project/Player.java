@@ -15,7 +15,7 @@ public class Player extends GameObjects implements Serializable{
     private final String name;
     
     public Player(String name) {
-        super(100, 0, 10); //HP , DEF, ATK
+        super(100, 10, 20); //HP , DEF, ATK
         this.name = name;
     }
     public String getName(){
