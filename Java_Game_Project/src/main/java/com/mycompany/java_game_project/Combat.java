@@ -3,44 +3,56 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.java_game_project;
-import com.mycompany.java_game_project.GameUI.CombatLog;
-import com.mycompany.java_game_project.GameUI.GameUI;
-import com.mycompany.java_game_project.GameUI.GuideAndDetails;
-import com.mycompany.java_game_project.GameUI.InvalidHandler;
+import com.mycompany.java_game_project.Interfaces.ICombatLog;
+import com.mycompany.java_game_project.Interfaces.ICombatMenu;
+import com.mycompany.java_game_project.Interfaces.IEndGame;
+import com.mycompany.java_game_project.Interfaces.IGameDetails;
+import com.mycompany.java_game_project.Interfaces.IInvalidHandler;
+import com.mycompany.java_game_project.Interfaces.IUserInputs;
 import java.io.*;
 /**
- * can do file i/o battle log
+ * 
  * This class handles combat logic
  * @author trist
  */
 
 public class Combat implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private boolean inCombat = false;
-    private final UserInputs input;
-    private final Player player;
-    private final Enemy currentEnemy;
-    private final Turns turn;
-    private final GameUI ui;
-    private final GuideAndDetails gd;
-    private final InvalidHandler ih;
     
-
-    public Combat(Player player, Enemy currentEnemy, UserInputs input, GameUI ui, GuideAndDetails gd, InvalidHandler ih, CombatLog log) {
+    private final Enemy currentEnemy;
+    private final Player player;
+    private boolean inCombat = false;
+    private final ICombatMenu cm;
+    private final IEndGame eg;
+    private final IGameDetails gd;
+    final IInvalidHandler ih;
+    final IUserInputs input;
+    private final Turns turn;
+    
+    
+    public Combat(Player player,
+            Enemy currentEnemy, 
+            IUserInputs input,
+            IEndGame eg,
+            IGameDetails gd,
+            IInvalidHandler ih, 
+            ICombatLog log, 
+            ICombatMenu cm) {
+        
         this.input = input;
         this.player = player;
         this.currentEnemy = currentEnemy;
         this.inCombat = true;
-        this.ui = ui;
+        this.eg = eg;
         this.gd = gd;
         this.ih = ih;
         this.turn = new Turns(log);
+        this.cm = cm;
     }
 
     public void startCombat() {
         while (inCombat) {
-            ui.combatMenu(player, currentEnemy);
+            cm.displayCombatMenu(player, currentEnemy);
             try {
                 int choice = Integer.parseInt(input.getInput());
                 switch (choice) {
@@ -54,7 +66,7 @@ public class Combat implements Serializable {
                         //defend
                         if (!player.isDefending()) {
                             player.defend();
-                            ui.combatMenu(player, currentEnemy);
+                            cm.displayCombatMenu(player, currentEnemy);
                             turn.playerDefend(player.getName());
                         } else {
                             ih.invalidInput(player.getName() + " is already defending!");
@@ -72,7 +84,7 @@ public class Combat implements Serializable {
                     }
 
                     case 4 -> {
-                        gd.showGameDetails();
+                        gd.displayGameDetails();
                         input.getInput();
                         continue; //makes enemies not attack / skip turn
                     }
@@ -97,10 +109,11 @@ public class Combat implements Serializable {
     private void checkContinue() {
         if (currentEnemy.getHealth() <= 0) {
             inCombat = false;
-            ui.combatMenu(player, currentEnemy);
+            cm.displayCombatMenu(player, currentEnemy);
         }
         if (player.getHealth() <= 0){
-            ui.gameOver();
+            eg.displayGameOver();
+            inCombat = false;
         }
     }
 }

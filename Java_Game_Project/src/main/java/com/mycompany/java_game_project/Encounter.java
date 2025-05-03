@@ -4,11 +4,13 @@
  */
 
 package com.mycompany.java_game_project;
-import com.mycompany.java_game_project.GameUI.CombatLog;
-import com.mycompany.java_game_project.GameUI.EncounterUI;
-import com.mycompany.java_game_project.GameUI.GameUI;
-import com.mycompany.java_game_project.GameUI.GuideAndDetails;
-import com.mycompany.java_game_project.GameUI.InvalidHandler;
+import com.mycompany.java_game_project.Interfaces.ICombatLog;
+import com.mycompany.java_game_project.Interfaces.ICombatMenu;
+import com.mycompany.java_game_project.Interfaces.IEncounterUI;
+import com.mycompany.java_game_project.Interfaces.IEndGame;
+import com.mycompany.java_game_project.Interfaces.IGameDetails;
+import com.mycompany.java_game_project.Interfaces.IInvalidHandler;
+import com.mycompany.java_game_project.Interfaces.IUserInputs;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,29 +32,36 @@ public class Encounter implements Serializable {
     private Combat combat;
     private int stage;
     private int enemies;
-    private final UserInputs input;
-    private final GameUI ui;
-    private EnemyType defeatedLast;
-    private final GuideAndDetails gd;
-    private final InvalidHandler ih;
-    private final EncounterUI encounterUI;
-    private final CombatLog log;
-    Turns turn;
+    private EnemyType defeatedLast;    
+    private final ICombatLog log;
+    private final ICombatMenu cm;
+    private final IEncounterUI eui;
+    private final IEndGame eg;
+    private final IGameDetails gd;
+    final IInvalidHandler ih;
+    final IUserInputs input;
     
     //store enemy type by stage
     private final Map<Integer, ArrayList<EnemyType>> stageEnemies = new HashMap<>();
         
-    public Encounter(Player player, UserInputs input, GameUI ui, GuideAndDetails gd, InvalidHandler ih, EncounterUI encounterUI, CombatLog log) {
+    public Encounter(Player player,
+            IUserInputs input,
+            IEndGame eg, 
+            IGameDetails gd, 
+            IInvalidHandler ih, 
+            IEncounterUI eui,
+            ICombatLog log, 
+            ICombatMenu cm) {
         this.player = player;
         this.input = input;
         this.stage = 1;
-        this.ui = ui;
+        this.eg = eg;
         this.enemies = 0;
         this.gd = gd;
         this.ih = ih;
-        this.encounterUI = encounterUI;
+        this.eui = eui;
         this.log = log;
-        this.turn = new Turns(log);
+        this.cm = cm;
         
         enemyStages();
     }
@@ -60,12 +69,12 @@ public class Encounter implements Serializable {
     //initializing enemy types per stages
     private void enemyStages() {
         //enemy type and what stage they belong to using map and list
-        stageEnemies.put(1, new ArrayList<>(List.of(EnemyType.SLIME))); //(new ArrayList<>()) for future expansion/remove
+        stageEnemies.put(1, new ArrayList<>(List.of(EnemyType.SLIME))); //(new ArrayList<>()) allows to be mutable list
         stageEnemies.put(2, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN)));
         stageEnemies.put(3, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN, EnemyType.ZOMBIE)));
         stageEnemies.put(4, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN, EnemyType.ZOMBIE, EnemyType.MONKEY)));
         stageEnemies.put(5, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN, EnemyType.ZOMBIE, EnemyType.MONKEY, EnemyType.LIZARDMAN)));
-        stageEnemies.put(6, new ArrayList<>(List.of(EnemyType.DEMON, EnemyType.SMOLLDRAGON)));
+        stageEnemies.put(6, new ArrayList<>(List.of(EnemyType.DEMON, EnemyType.BOSSBABY)));
     }
     
     // converting EnemyTypes to actual Enemy to fight in the stage
@@ -91,13 +100,14 @@ public class Encounter implements Serializable {
             for (int i = enemies; i < setEnemy.size(); i++) {
                 Enemy enemy = setEnemy.get(i);
                 //show current encounter
-                encounterUI.encounterMessage(player.getName(), enemy.getType());
+                eui.displayEncounterMessage(player.getName(), enemy.getType());
                 //storing last defeated for when resuming game
                 setDefeatedLast(enemy.getType());
                 //getting into a fight
-                combat = new Combat(player, enemy, input, ui, gd, ih, log);
+                combat = new Combat(player, enemy, input, eg, gd, ih, log, cm);
                 combat.startCombat();
-                encounterUI.playerContinue(); //show continue menu
+                SaveHandler.savePlayerRecord(this, player);
+                eui.displayPlayerContinue();//show continue menu
                 boolean valid = false;
                 while(!valid){
                     try {
@@ -110,8 +120,8 @@ public class Encounter implements Serializable {
                             }
                             
                             case 2 -> {
-                                //rest
-                                encounterUI.restingMenu();
+                                //rest: each rest saves the game
+                                eui.displayPlayerResting();
                                 player.healToFull();
                                 playerResting();
                                 valid = true;
@@ -124,7 +134,7 @@ public class Encounter implements Serializable {
                                 SaveHandler.saveGame();
                                 SaveHandler.savePlayerRecord(this, player);
                                 SaveHandler.savePlayerProgress(this, player);
-                                ui.quitGame();
+                                eg.quitGame();
                                 return;
                             }
                             default -> {
@@ -147,7 +157,7 @@ public class Encounter implements Serializable {
                 System.out.println("Welcome to stage: " + getStage());
             }
         }
-        ui.gameFinish();
+        eg.displayGameFinish();
     }
     
     public void playerResting(){
@@ -156,7 +166,7 @@ public class Encounter implements Serializable {
             try {
                 int choice = Integer.parseInt(input.getInput());
                 switch (choice) {
-                    case 1 -> {
+                    case 1 -> { //continue
                         System.out.println("Healed to full HP");
                         System.out.println("Continuing stage " + stage + "...");
                         log.clearCombatLog();
@@ -164,12 +174,12 @@ public class Encounter implements Serializable {
                     }
                     case 2 -> {
                         //show player record
-                        encounterUI.loadPlayerRecord();
+                        eui.loadPlayerRecord();
                         System.out.print("Would you like to see the battle log for stage " + getStage() + " (y/n)?");
                         String showLog = input.getInput();
                         if (showLog.equalsIgnoreCase("y") || showLog.equalsIgnoreCase("yes")) {
                             log.displayLog();
-                            System.out.println("Press ENTER to continue.");
+                            System.out.println("\n === Press ENTER to continue. === ");
                             input.getInput();
                         }
                         System.out.println("Continuing stage " + getStage() + "...");
@@ -183,7 +193,7 @@ public class Encounter implements Serializable {
                         SaveHandler.saveGame();
                         SaveHandler.savePlayerRecord(this, player);
                         SaveHandler.savePlayerProgress(this, player);
-                        ui.quitGame();
+                        eg.quitGame();
                         return;
                     }
                     default -> ih.invalidInput("Only chose 1-3!");

@@ -6,7 +6,7 @@
 package com.mycompany.java_game_project;
 import java.io.*;
 /**
- * show stats FIle i/o
+ *
  * This class stores player stats, actions and information
  * @author trist
  */
@@ -20,6 +20,11 @@ public class Player extends GameObjects implements Serializable{
     }
     public String getName(){
         return name;
+    }
+    
+    @Override
+    public int getAttack(){
+        return attack;
     }
 
     @Override
@@ -40,7 +45,7 @@ public class Player extends GameObjects implements Serializable{
     }
     
     private boolean defending = false;
-    private final int increaseDef = 5;
+    private final int increaseDef = 50;
     
     public void defend() { // method for player defends incoming attack (+defense)
         if(!isDefending()){

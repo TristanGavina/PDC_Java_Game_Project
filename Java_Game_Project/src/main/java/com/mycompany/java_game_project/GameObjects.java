@@ -6,7 +6,7 @@
 package com.mycompany.java_game_project;
 import java.io.*;
 /**
- * abstract classes exits to be extended, they cannot be instantiated
+ *
  * where all shared behaviors is stored
  * @author trist
  */
@@ -44,7 +44,7 @@ public abstract class GameObjects implements Serializable{
 
     
     
-    public abstract int attack(GameObjects  target); //    
+    public abstract int attack(GameObjects  target);   
     public abstract String draw(); //overrite to print stats
 
 }

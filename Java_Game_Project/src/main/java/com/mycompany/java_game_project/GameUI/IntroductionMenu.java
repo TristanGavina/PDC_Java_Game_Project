@@ -4,6 +4,7 @@
  */
 package com.mycompany.java_game_project.GameUI;
 
+import com.mycompany.java_game_project.Interfaces.IIntroMenu;
 import java.io.BufferedReader;
 
 import java.io.FileReader;
@@ -15,12 +16,13 @@ import java.io.Serializable;
  *
  * @author trist
  */
-public class IntroductionMenu implements Serializable {
+public class IntroductionMenu implements Serializable, IIntroMenu {
     private static final long serialVersionUID = 1L;
-    private static final String INTRO_PATH = "GameUIs/playerIntro.txt";
+    private static final String INTRO_PATH = "GameUI_text_files/playerIntro.txt";
     
     //showing introduction
-    public void playerIntro() {
+    @Override
+    public void displayIntro() {
         try (BufferedReader br = new BufferedReader(new FileReader(INTRO_PATH))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -31,7 +33,8 @@ public class IntroductionMenu implements Serializable {
         }
     }
       
-    public void welcomePlayer(String name) {
+    @Override
+    public void displayWelcome(String name) {
         String welcome = " Welcome to the first stage " + name + "!";
         
         //dynamic ui padding

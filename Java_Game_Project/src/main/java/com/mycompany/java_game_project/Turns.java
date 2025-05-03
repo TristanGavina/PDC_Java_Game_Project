@@ -4,8 +4,9 @@
  */
 package com.mycompany.java_game_project;
 
+import com.mycompany.java_game_project.Interfaces.ICombatLog;
 import com.mycompany.java_game_project.GameUI.CombatLog;
-import com.mycompany.java_game_project.GameUI.GameUI;
+import com.mycompany.java_game_project.GameUI.EndGameUI;
 import java.io.Serializable;
 
 /**
@@ -13,19 +14,17 @@ import java.io.Serializable;
  * @author trist
  */
 public class Turns implements Serializable{
-    
-    CombatLog log;
-
-    public Turns(CombatLog log) {
-        this.log = log;
-    }
     private static final long serialVersionUID = 1L;
-
+    ICombatLog log;
+    
+    public Turns(ICombatLog log) {
+            this.log = log;
+        }
+    
     public void playerDefend(String name) {
         String turn = "> " + name + " braces for an attack.";
         System.out.println(turn);
         log.logTurn(turn);
-        
     }
 
     public void playerTakeDamage(String name, int damage, int health){
@@ -68,5 +67,4 @@ public class Turns implements Serializable{
         System.out.println(turn);
         log.logTurn(turn);
     }
-    
 }

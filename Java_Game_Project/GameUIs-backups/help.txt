@@ -1,0 +1,43 @@
+=== GAME DETAILS AND FEATURES ==
+  - This game is only playable using numbers and the usual yes and no.
+    - During combat invalid inputs results in enemies getting a free move on you.
+  - The game has a save and load feature using serialization saving the game object and state.
+  - The game UI's is all stored in text file, so its highly customizable.
+    - Game UI is customizable but game controls are not, it will still only take numbers (1-4) and y/n.
+  - Every stage and/or enemy defeat the player's record is saved, which is loaded when loading game.
+
+== STAGE DETAILS ==
+  - 6 stages that gets progressively harder.
+  - Previous stage enemies will reappear in later stages.
+
+CONTROLS/OPTIONS Explained:
+  [START MENU]
+    - [1] to START NEW GAME (will ALWAYS overwrite previous save when quitting)
+    - [2] to LOAD GAME (load previous game state)
+    - [3] to QUIT GAME
+  [COMBAT]
+    - [1] to ATTACK
+    - [2] to DEFEND (+50 defense for 1 turn)
+    - [3] to HEAL (+10 HP)
+    - [4] to VIEW game details
+  [AFTER ENEMY DEFEAT]
+    - [1] to CONTINUE next enemy or stage
+    - [2] to REST
+    - [3] to SAVE AND QUIT
+  [REST OPTIONS]
+    - [1] to CONTINUE
+    - [2] to SHOW PLAYER RECORD (show stat and current floor)
+    - [3] to SAVE AND QUIT
+
+=== TIPS ===
+  - Resting saves the game.
+  - Enemies takes reduced damage depending on their defence.
+  - Enemies only attack so keep track of your health and plan your moves wisely.
+  - Enemy and Player stats can be shown below combat menu / options.
+  - Defending will increase defence for 1 turn.
+  - Can only heal when below max health.
+  - Healing will not stop enemies attack, use wisely.
+  - Always REST after battle, give you more time to plan and prepare.
+
+=== Press ENTER to continue ===
+

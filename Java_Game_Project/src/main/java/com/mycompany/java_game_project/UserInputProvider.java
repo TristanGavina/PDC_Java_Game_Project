@@ -5,6 +5,7 @@
 
 package com.mycompany.java_game_project;
 
+import com.mycompany.java_game_project.Interfaces.IUserInputs;
 import java.io.*;
 import java.util.Scanner;
 
@@ -12,7 +13,7 @@ import java.util.Scanner;
  *
  * @author trist
  */
-public class UserInputProvider implements UserInputs, Serializable {
+public class UserInputProvider implements IUserInputs, Serializable {
         private static final long serialVersionUID = 1L;
 
     private transient Scanner scan;

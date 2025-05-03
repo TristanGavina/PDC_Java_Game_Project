@@ -9,16 +9,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import com.mycompany.java_game_project.Interfaces.IStartMenu;
 
 /**
  *
  * @author trist
  */
-public class StartMenu implements Serializable{
+public class StartMenu implements Serializable, IStartMenu{
     private static final long serialVersionUID = 1L;
-    private static final String FILE_PATH = "./GameUIs/startMenu.txt";
-    // show Start Menu from txt file
-    public void startMenu() {
+    private static final String FILE_PATH = "./GameUI_text_files/startMenu.txt";
+        
+    @Override
+    public void display() {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -28,5 +30,4 @@ public class StartMenu implements Serializable{
             System.out.println("Error reading playerIntro menu: " + e.getMessage());
         }
     }
-    
 }

@@ -15,8 +15,8 @@ public enum EnemyType implements Serializable { //HP , DEF, ATK
     GOBLIN(20, 3, 5),
     MONKEY(30, 3, 10),
     LIZARDMAN(50, 5, 15),
-    DEMON(150, 3, 20),
-    SMOLLDRAGON(200, 5, 20);
+    DEMON(100, 3, 20),
+    BOSSBABY(100, 10, 20);
     
     private final int health;
     private final int attack;

@@ -4,9 +4,9 @@
  */
 package com.mycompany.java_game_project.GameUI;
 
+import com.mycompany.java_game_project.Interfaces.ICombatLog;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,31 +15,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * stores and shows combat log
  * @author trist
  */
-public class CombatLog implements Serializable{
+public class CombatLog implements Serializable, ICombatLog{
     private static final long serialVersionUID = 1L;
-
     private final List<String> combatLog = new ArrayList<>();
+    
     //file path
-    private static final String COMBATLOG_PATH = "./GameUIs/combatLog.txt";
+    private static final String COMBATLOG_PATH = "./GameUI_text_files/combatLog.txt";
             
+    @Override
     public void logTurn(String turn) {
         combatLog.add(turn);
         writeCombatLog();
     }
 
     //clear combatLog file and memory for every stage
+    @Override
     public void clearCombatLog() {
         combatLog.clear();
-//        try (BufferedWriter bw = new BufferedWriter(new FileWriter(COMBATLOG_PATH))) {
-//            bw.write("");
-//        } catch (IOException e) {
-//            System.out.println("Error writing combat log to file: " + e.getMessage());
-//        }
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(COMBATLOG_PATH))) {
+            bw.write("");
+        } catch (IOException e) {
+            System.out.println("Error writing combat log to file: " + e.getMessage());
+        }
     }
 
+    @Override
     public void displayLog() {
         try (BufferedReader br = new BufferedReader(new FileReader(COMBATLOG_PATH))) {
             String line;
@@ -61,5 +64,4 @@ public class CombatLog implements Serializable{
             System.out.println("Error writing combat log to file: " + e.getMessage());
         }
     }
-    
 }

@@ -4,6 +4,7 @@
  */
 package com.mycompany.java_game_project.GameUI;
 
+import com.mycompany.java_game_project.Interfaces.IEncounterUI;
 import com.mycompany.java_game_project.EnemyType;
 
 
@@ -21,47 +22,17 @@ import java.io.Serializable;
  *
  * @author trist
  */
-public class EncounterUI implements Serializable {
+public class EncounterUI implements Serializable, IEncounterUI {
     private static final long serialVersionUID = 1L;
+    private static final String PLAYERCONTINUE_PATH = "GameUI_text_files/playerContinue.txt";
+    private static final String PLAYERRESTING_PATH = "GameUI_text_files/restingMenu.txt";
+    private static final String PLAYERRECORD_PATH = "./GameSaves/playerRecord.txt";
 
-    private static final String PLAYERPROGRESS_PATH = "./GameSaves/playerProgress.txt";
-    public static void loadPlayerProgress() {
-        try (BufferedReader br = new BufferedReader(new FileReader(PLAYERPROGRESS_PATH))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading player records: " + e.getMessage());
-        }
-    }
+    
 
     //Encounter menus
-    public void playerContinue() {
-        File continueOutput = new File("GameUIs/playerContinue.txt");
-        try (BufferedReader br = new BufferedReader(new FileReader(continueOutput))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading playerContinue menu: " + e.getMessage());
-        }
-    }
-
-    public void restingMenu() {
-        File file = new File("GameUIs/restingMenu.txt");
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading resting menu: " + e.getMessage());
-        }
-    }
-
-    public void encounterMessage(String name, EnemyType enemyType) {
+    @Override
+    public void displayEncounterMessage(String name, EnemyType enemyType) {
         String encounter = name + " has encountered an " + enemyType + "!";
         int boxWidth = 45;
         int totalPadding = boxWidth - encounter.length();
@@ -74,7 +45,31 @@ public class EncounterUI implements Serializable {
         System.out.println("|                                             |");
     }
 
-    private static final String PLAYERRECORD_PATH = "./GameSaves/playerRecord.txt";
+    @Override
+    public void displayPlayerContinue() {
+        try (BufferedReader br = new BufferedReader(new FileReader(PLAYERCONTINUE_PATH))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading playerContinue menu: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void displayPlayerResting() {
+        try (BufferedReader br = new BufferedReader(new FileReader(PLAYERRESTING_PATH))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading resting menu: " + e.getMessage());
+        }
+    }
+    
+    @Override
     public void loadPlayerRecord() {
         try (BufferedReader br = new BufferedReader(new FileReader(PLAYERRECORD_PATH))) {
             String line;
@@ -85,7 +80,4 @@ public class EncounterUI implements Serializable {
             System.out.println("Error reading player records: " + e.getMessage());
         }
     }
-    
-    
-    
 }

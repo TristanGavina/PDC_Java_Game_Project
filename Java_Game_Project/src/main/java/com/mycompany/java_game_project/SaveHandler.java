@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.java_game_project;
-import com.mycompany.java_game_project.GameUI.EncounterUI;
+import com.mycompany.java_game_project.GameUI.WriteFiles;
 import java.io.*;
 /**
  *
@@ -27,6 +27,7 @@ public class SaveHandler implements Serializable {
     }
 
     public static void saveGame(){      
+        WriteFiles.makeSaveFolder();
         //saving whole game
         try{
             FileOutputStream fos = new FileOutputStream("GameSaves/Game.sav");
@@ -43,7 +44,7 @@ public class SaveHandler implements Serializable {
     // resumes where game left off
     public static void resumeGame(Java_Game_Project game) {
         if (game.player != null && game.encounter != null) {
-            EncounterUI.loadPlayerProgress();
+            loadPlayerProgress();
             game.input.getInput();
             game.encounter.encountered();
         } else {
@@ -77,11 +78,23 @@ public class SaveHandler implements Serializable {
             bw.write("|           Resuming from stage: " + encounter.getStage() + "\n");
             bw.write("|           Last defeated enemy: " + encounter.getDefeatedLast() + "\n");
             bw.write("|           Number of enemies in this stage: " + encounter.getTotalEnemiesInStage()+ "\n");
-            bw.write("|=============================================|\n");
+            bw.write("""
+                     |           === Press ENTER to continue ===   |
+                     |=============================================|
+                     """);
         } catch (IOException e) {
             System.out.println("Error writing player progress to file: " + e.getMessage());
         }
     }
     
-    
+    public static void loadPlayerProgress() {
+        try (BufferedReader br = new BufferedReader(new FileReader(PLAYERPROGRESS_PATH))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading player records: " + e.getMessage());
+        }
+    }
 }
