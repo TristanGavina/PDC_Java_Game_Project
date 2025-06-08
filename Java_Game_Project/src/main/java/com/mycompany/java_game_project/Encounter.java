@@ -77,7 +77,7 @@ public class Encounter implements Serializable {
         stageEnemies.put(6, new ArrayList<>(List.of(EnemyType.DEMON, EnemyType.BOSSBABY)));
     }
     
-    // converting EnemyTypes to actual Enemy to fight in the stage
+    // converting EnemyTypes to Enemy objects to fight in the stage
     private ArrayList<Enemy> stageEnemy(int stage) {
         ArrayList<EnemyType> types = stageEnemies.get(stage);
         if (types == null) {
@@ -85,7 +85,7 @@ public class Encounter implements Serializable {
             return new ArrayList<>();
         }
         ArrayList<Enemy> enemy = new ArrayList<>();
-        //looping through enemy type from map and creating new enemy to list
+        //looping through enemy type from map and creating new enemy object to list
         for (EnemyType type : types) {
             enemy.add(new Enemy(type));
         }
@@ -95,19 +95,22 @@ public class Encounter implements Serializable {
     //encounter flow method
     public void encountered(){
         while(stage <= 6){
-            //list of enemies for current stage
+            // get list of enemies for current stage
             ArrayList<Enemy> setEnemy = stageEnemy(stage);
+            
             for (int i = enemies; i < setEnemy.size(); i++) {
                 Enemy enemy = setEnemy.get(i);
                 //show current encounter
                 eui.displayEncounterMessage(player.getName(), enemy.getType());
                 //storing last defeated for when resuming game
                 setDefeatedLast(enemy.getType());
-                //getting into a fight
+                // starts the combat sequence
                 combat = new Combat(player, enemy, input, eg, gd, ih, log, cm);
                 combat.startCombat();
+                //save player's record after combat
                 SaveHandler.savePlayerRecord(this, player);
-                eui.displayPlayerContinue();//show continue menu
+                eui.displayPlayerContinue();//show continue menu after combat
+                
                 boolean valid = false;
                 while(!valid){
                     try {
@@ -120,7 +123,7 @@ public class Encounter implements Serializable {
                             }
                             
                             case 2 -> {
-                                //rest: each rest saves the game
+                                //rest
                                 eui.displayPlayerResting();
                                 player.healToFull();
                                 playerResting();
@@ -147,7 +150,6 @@ public class Encounter implements Serializable {
                         ih.invalidInput(e.getMessage() + " Only choose 1-3!");
                     }
                 }
-                //enemies = i + 1;
             }
             System.out.println("All enemies in stage " + getStage() + " have been defeated!");
             System.out.println("Moving to next stage...");
@@ -175,13 +177,22 @@ public class Encounter implements Serializable {
                     case 2 -> {
                         //show player record
                         eui.loadPlayerRecord();
-                        System.out.print("Would you like to see the battle log for stage " + getStage() + " (y/n)?");
-                        String showLog = input.getInput();
-                        if (showLog.equalsIgnoreCase("y") || showLog.equalsIgnoreCase("yes")) {
-                            log.displayLog();
-                            System.out.println("\n === Press ENTER to continue. === ");
-                            input.getInput();
+                        
+                        while(true){
+                            System.out.println("Would you like to see the battle log for stage " + getStage() + " (y/n)? ");
+                            String showLog = input.getInput();
+                            if (showLog.equalsIgnoreCase("y") || showLog.equalsIgnoreCase("yes")) {
+                                log.displayLog();
+                                System.out.println("\n === Press ENTER to continue. === ");
+                                input.getInput();
+                                break;
+                            } else if (showLog.equalsIgnoreCase("n") || showLog.equalsIgnoreCase("No")){
+                                break;
+                            } else {
+                                ih.invalidInput("Please only yes no");
+                            }
                         }
+                        
                         System.out.println("Continuing stage " + getStage() + "...");
                         log.clearCombatLog();
                         valid = true;
@@ -211,7 +222,7 @@ public class Encounter implements Serializable {
     public int getEnemies() {
         return enemies;
     }
-    //set last defeated enemy
+    //set last defeated enemy type
     public void setDefeatedLast(EnemyType type){
         this.defeatedLast = type;
     }

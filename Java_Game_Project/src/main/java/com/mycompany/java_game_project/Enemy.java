@@ -5,7 +5,7 @@
 package com.mycompany.java_game_project;
 import java.io.*;
 /**
- * This class 
+ * This class stores all enemy related stuff
  * @author trist
  */
 

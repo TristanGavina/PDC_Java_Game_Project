@@ -74,14 +74,14 @@ public final class Java_Game_Project implements Serializable {
     
     public void menu(){
         while(gameRunning){
-            WriteFiles.writeAllMenu();
-            sm.display();
+            WriteFiles.writeAllMenu(); //writes all missing files when run
+            sm.display(); //display start menu
             try{
                 int option = Integer.parseInt(input.getInput());
                 switch(option){
-                case 1 -> {
+                case 1 -> { //game start
+                    // checks first if existing save fine exist (continue to start game if not available)
                     checkSaveFile();
-                    //startGame();//game start
                 }
                 case 2 -> { //load game
                     SaveHandler.loadGame();
@@ -98,7 +98,7 @@ public final class Java_Game_Project implements Serializable {
                     eg.quitGame();// quit game
                 }
 
-                default -> ih.invalidInput("Only chose 1-3"); // error message
+                default -> ih.invalidInput("Only chose 1-3");
                 }   
             } catch(NumberFormatException e){
                 ih.invalidInput(e.getMessage());
@@ -118,12 +118,12 @@ public final class Java_Game_Project implements Serializable {
                 break;
             }
         }
-        player = new Player(name); // store player name
-        im.displayWelcome(name); // show player name
+        player = new Player(name); // creates player with name
+        im.displayWelcome(name); // welcome player
         gd.displayGameGuide();
         input.getInput();
         encounter = new Encounter(player, input, eg, gd, ih, eui, log, cm);
-        encounter.encountered(); // call encountered method in encounter class
+        encounter.encountered(); // calls the first encounter
         }
     
     public static void main(String[] args) {
@@ -137,14 +137,14 @@ public final class Java_Game_Project implements Serializable {
         IEncounterUI eui = new EncounterUI();
         ICombatLog log = new CombatLog();
         ICombatMenu cm = new CombatMenu();
+        
         game = new Java_Game_Project(userInput, eg, sm, im, gd, ih, eui, log, cm);
         SaveHandler.game = game; // Link the SaveHandler to this game instance
-        game.menu();
+        game.menu(); //launches the game
     }
     
-
     private void checkSaveFile(){
-        //check if save files exist
+        // check if save files exist
         File saveFile = new File("./GameSaves/Game.sav");
         
         boolean fileExist = true;
@@ -154,7 +154,7 @@ public final class Java_Game_Project implements Serializable {
                 String overwrite = input.getInput();
                 if(overwrite.equalsIgnoreCase("y") || overwrite.equalsIgnoreCase("yes")){
                     System.out.println("Deleting save...");
-                    //delete save files
+                    //delete existing save files
                     saveFile.delete();
                     clearPlayerProgress();
                     startGame();
@@ -171,17 +171,17 @@ public final class Java_Game_Project implements Serializable {
             }        
     }
     
-    
+    private static final String PLAYERRECORD_PATH = "./GameSaves/playerRecord.txt";
+    private static final String PLAYERPROGRESS_PATH = "./GameSaves/playerProgress.txt";
+    // for clearing previous progress / record
     public void clearPlayerProgress(){
-        File playerRecord = new File("./GameSaves/playerRecord.txt");
-        File playerProgress = new File("./GameSaves/playerProgress.txt");
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(playerRecord))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PLAYERRECORD_PATH))) {
             bw.write("");
         } catch (IOException e) {
             System.out.println("Error writing combat log to file: " + e.getMessage());
         }
         
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(playerProgress))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PLAYERPROGRESS_PATH))) {
             bw.write("");
         } catch (IOException e) {
             System.out.println("Error writing combat log to file: " + e.getMessage());
