@@ -19,7 +19,7 @@ import java.util.Map;
 
 
 /**
- * This class handles and stores encounters for each stages
+ * This class handles and stores encounters for each stage
  * Have increasing enemies each stages
  * Asks the player if they want to continue, rest and quit after each fight
  * Keeping track of the last enemy defeated and remaining enemies to show when game is loaded again
