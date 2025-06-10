@@ -127,7 +127,7 @@ public class StartGame implements Serializable{
         encounter.encountered(); // calls the first encounter
         }
     
-    private void checkSaveFile(){
+    public void checkSaveFile(){
         // check if save files exist
         File saveFile = new File("./GameSaves/Game.sav");
         
