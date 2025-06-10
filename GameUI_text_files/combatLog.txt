@@ -1,2 +1,4 @@
 > Tristan attacks for 20 damage!
 SLIME took 20 damage!
+> Tristan attacks for 20 damage!
+SLIME took 20 damage!

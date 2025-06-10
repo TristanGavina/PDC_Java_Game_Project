@@ -4,5 +4,5 @@
 |           HP: 100
 |           Defense: 10
 |           Attack: 20
-|           Current Stage: 1
+|           Current Stage: 2
 |=============================================|

@@ -133,7 +133,7 @@ public class Encounter implements Serializable {
                             case 3 -> {
                                 //save and quit
                                 enemies++;
-                                Java_Game_Project.game = SaveHandler.game;
+                                StartGame.game = SaveHandler.game;
                                 SaveHandler.saveGame();
                                 SaveHandler.savePlayerRecord(this, player);
                                 SaveHandler.savePlayerProgress(this, player);
@@ -200,7 +200,7 @@ public class Encounter implements Serializable {
                     case 3 -> {
                         //save and quit
                         enemies++;
-                        Java_Game_Project.game = SaveHandler.game;
+                        StartGame.game = SaveHandler.game;
                         SaveHandler.saveGame();
                         SaveHandler.savePlayerRecord(this, player);
                         SaveHandler.savePlayerProgress(this, player);

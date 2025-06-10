@@ -11,13 +11,13 @@ import java.io.*;
  */
 public class SaveHandler implements Serializable {
     private static final long serialVersionUID = 1L;
-    static Java_Game_Project game;
+    static StartGame game;
     
     public static void loadGame(){ //loading game object
         try{
             FileInputStream fis = new FileInputStream("GameSaves/Game.sav");
             ObjectInputStream ois = new ObjectInputStream(fis);
-            game = (Java_Game_Project) ois.readObject();
+            game = (StartGame) ois.readObject();
             ois.close();
             System.out.println("Game Loaded!");
             resumeGame(game);
@@ -42,7 +42,7 @@ public class SaveHandler implements Serializable {
     }
 
     // resumes where game left off
-    public static void resumeGame(Java_Game_Project game) {
+    public static void resumeGame(StartGame game) {
         if (game.player != null && game.encounter != null) {
             loadPlayerProgress();
             game.input.getInput();

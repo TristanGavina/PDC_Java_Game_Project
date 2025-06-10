@@ -13,12 +13,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
 
 /**
  *
  * @author trist
  */
-public class CombatMenu implements Serializable, ICombatMenu{
+public class CombatMenu extends JPanel implements Serializable, ICombatMenu {
     private static final long serialVersionUID = 1L;
     private static final String COMBATMENU_PATH = "GameUI_text_files/combatMenu.txt";
     
