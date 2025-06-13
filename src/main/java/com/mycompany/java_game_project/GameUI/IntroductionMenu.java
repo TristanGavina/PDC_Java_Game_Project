@@ -89,7 +89,7 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
         submitButton.setFont(buttonFont);
         submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitButton.setMaximumSize(buttonSize);
-
+        
         inputPanel.add(Box.createVerticalStrut(30));
         inputPanel.add(nameField);
         inputPanel.add(Box.createVerticalStrut(15));
@@ -110,7 +110,6 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
                     
                     if(data.loginFlag){
                         if(data.currentScore > 0) {
-                            // Existing user with score
                             int option = JOptionPane.showConfirmDialog(
                                 IntroductionMenu.this, 
                                 "Welcome back " + name + "! Your current score is " + data.currentScore + 
@@ -140,7 +139,7 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
     }
     
     private void startGameWithUser(String name, int currentScore){
-        frame.setVisible(false);
+        frame.showCombat();
         
         if(game != null){
             game.startGameWithName(name, currentScore);

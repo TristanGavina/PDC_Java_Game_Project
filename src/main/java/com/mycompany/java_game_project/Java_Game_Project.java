@@ -4,6 +4,7 @@
 
 
 package com.mycompany.java_game_project;
+import com.mycompany.java_game_project.GameUI.CombatGUI;
 import com.mycompany.java_game_project.Interfaces.ICombatLog;
 import com.mycompany.java_game_project.Interfaces.ICombatMenu;
 import com.mycompany.java_game_project.Interfaces.IEncounterUI;
@@ -43,6 +44,7 @@ public final class Java_Game_Project extends JFrame{
     private StartMenu startMenu;
     private IntroductionMenu introMenu;
     private StartGame game;
+    private CombatGUI combatMenu;
     
     public Java_Game_Project(){
         IUserInputs userInput = new UserInputProvider();
@@ -53,10 +55,11 @@ public final class Java_Game_Project extends JFrame{
         ICombatLog log = new CombatLog();
         ICombatMenu cm = new CombatMenu();
         
-        //startGame
         startMenu = new StartMenu(this);
         introMenu = new IntroductionMenu(this);
+        combatMenu = new CombatGUI(this);
         
+        //startGame
         game = new StartGame(userInput, eg, startMenu, introMenu, gd, ih, eui, log, cm);
         SaveHandler.game = game;
         //game.menu(); //launches the game
@@ -71,6 +74,7 @@ public final class Java_Game_Project extends JFrame{
         
         cardPanel.add(startMenu, "StartMenu");
         cardPanel.add((JPanel)introMenu, "IntroMenu");
+        cardPanel.add((JPanel) combatMenu, "Combat");
         
         add(cardPanel);
         setTitle("Java Game Project");
@@ -83,10 +87,11 @@ public final class Java_Game_Project extends JFrame{
             
     public void showIntroMenu() {
         cardLayout.show(cardPanel, "IntroMenu");
-        introMenu.displayIntro();
     }
     
-    
+    public void showCombat(){
+        cardLayout.show(cardPanel, "Combat");
+    }
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Java_Game_Project::new);
