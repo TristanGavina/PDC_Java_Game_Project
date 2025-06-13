@@ -1,8 +1,0 @@
-|=============================================|
-|                Player Progress             
-|           Welcome back: Tristan
-|           Resuming from stage: 2
-|           Last defeated enemy: GOBLIN
-|           Number of enemies in this stage: 2
-|           === Press ENTER to continue ===   |
-|=============================================|

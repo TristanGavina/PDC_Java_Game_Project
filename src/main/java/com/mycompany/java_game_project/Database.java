@@ -13,37 +13,45 @@ import java.util.logging.Logger;
  */
 public class Database {
     Connection conn = null;
-    String url = "jdbc:derby:PlayerDB;create=true";
+    String url = "jdbc:derby:UserDB;create=true";
     
-    String dbusername = "game";
-    String dbpassword = "game";
+    String dbusername = "APP";
+    String dbpassword = "";
     
     public void dbsetup(){
         try{
             conn = DriverManager.getConnection(url, dbusername, dbpassword);
             Statement statement = conn.createStatement();
-            String tableName = "UserInfo";
+            String tableName = "USERINFO";
             
             if(!checkTableExisting(tableName)){
-                statement.executeUpdate("CREATE TABLE " + tableName + " (userid VARCHAR(12), playerhp INT, playerdef INT, playerattack INT");
+                String createTableSQL = "CREATE TABLE " + tableName + " (userid VARCHAR(12), password VARCHAR(12), score INT)";
+                statement.executeUpdate(createTableSQL);
+                System.out.println("Table " + tableName + " created successfully.");
+            } else {
+                System.out.println("Table " + tableName + " already exists.");
             }
             statement.close();
-        } catch (Throwable e){
-            System.out.println("Unable to create database table");
+        } catch (SQLException e){
+            System.out.println("Unable to create database table: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
-    Data checkName(String username, String password) {
+    public Data checkName(String username, String password) {
         Data data = new Data();
-        try {
-            Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT userid, password, score FROM UserInfo "
-                    + "WHERE userid = '" + username + "'");
+        
+        String selectSQL = "SELECT userid, password, score FROM USERINFO WHERE userid = ?";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(selectSQL)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            
             if (rs.next()) {
                 String pass = rs.getString("password");
                 System.out.println("***" + pass);
                 System.out.println("found user");
-                if (password.compareTo(pass) == 0) {
+                if (password.equals(pass)) {
                     data.currentScore = rs.getInt("score");
                     data.loginFlag = true;
                 } else {
@@ -52,13 +60,24 @@ public class Database {
             } else {
                 System.out.println("no such user");
                 System.out.println("creating new user");
-                statement.executeUpdate("INSERT INTO UserInfo "
-                        + "VALUES('" + username + "', '" + password + "', 0)");
-                data.loginFlag = true;
-
+                
+                String insertSQL = "INSERT INTO USERINFO (userid, password, score) VALUES (?, ?, ?)";
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertSQL)) {
+                    insertStmt.setString(1, username);
+                    insertStmt.setString(2, password);
+                    insertStmt.setInt(3, 0);
+                    insertStmt.executeUpdate();
+                    data.loginFlag = true;
+                } catch (SQLException insertEx) {
+                    System.out.println("Error creating new user: " + insertEx.getMessage());
+                    data.loginFlag = false;
+                }
             }
-
+            rs.close();
+            
         } catch (SQLException ex) {
+            System.out.println("Database error in checkName: " + ex.getMessage());
+            ex.printStackTrace();
             Logger.getLogger(Java_Game_Project.class.getName()).log(Level.SEVERE, null, ex);
         }
         return data;
@@ -67,35 +86,59 @@ public class Database {
     private boolean checkTableExisting(String newTableName) {
         boolean flag = false;
         try {
-
             System.out.println("check existing tables.... ");
-            String[] types = {"TABLE"};
             DatabaseMetaData dbmd = conn.getMetaData();
-            ResultSet rsDBMeta = dbmd.getTables(null, null, null, null);//types);
-            //Statement dropStatement=null;
+            ResultSet rsDBMeta = dbmd.getTables(null, "APP", newTableName.toUpperCase(), new String[]{"TABLE"});
+            
             while (rsDBMeta.next()) {
                 String tableName = rsDBMeta.getString("TABLE_NAME");
-                if (tableName.compareToIgnoreCase(newTableName) == 0) {
-                    System.out.println(tableName + "  is there");
+                System.out.println("Found table: " + tableName);
+                if (tableName.equalsIgnoreCase(newTableName)) {
+                    System.out.println(tableName + " is there");
                     flag = true;
+                    break;
                 }
             }
+            
             if (rsDBMeta != null) {
                 rsDBMeta.close();
             }
         } catch (SQLException ex) {
+            System.out.println("Error checking table existence: " + ex.getMessage());
+            ex.printStackTrace();
         }
         return flag;
     }
     
     public void quitGame(int score, String username){
-        Statement statement;
-        try {
-            statement = conn.createStatement();
-            statement.executeUpdate("UPDATE UserInfo SET score=" + score + " WHERE userid='" + username + "'");
-            System.out.println(username + score);
+        String updateSQL = "UPDATE USERINFO SET score = ? WHERE userid = ?";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+            pstmt.setInt(1, score);
+            pstmt.setString(2, username);
+            int rowsUpdated = pstmt.executeUpdate();
+            
+            if (rowsUpdated > 0) {
+                System.out.println("Score updated successfully for " + username + ": " + score);
+            } else {
+                System.out.println("No user found with username: " + username);
+            }
+            
         } catch (SQLException ex) {
+            System.out.println("Error updating score: " + ex.getMessage());
+            ex.printStackTrace();
             Logger.getLogger(Java_Game_Project.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void closeConnection() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Database connection closed.");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error closing database connection: " + ex.getMessage());
         }
     }
 }

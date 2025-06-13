@@ -41,6 +41,8 @@ public class Encounter implements Serializable {
     final IInvalidHandler ih;
     final IUserInputs input;
     
+    private int playerScore = 0;
+    
     //store enemy type by stage
     private final Map<Integer, ArrayList<EnemyType>> stageEnemies = new HashMap<>();
         
@@ -107,6 +109,10 @@ public class Encounter implements Serializable {
                 // starts the combat sequence
                 combat = new Combat(player, enemy, input, eg, gd, ih, log, cm);
                 combat.startCombat();
+                
+                if(enemy.getHealth() <= 0){
+                    killPoints(enemy.getType());
+                }
                 //save player's record after combat
                 SaveHandler.savePlayerRecord(this, player);
                 eui.displayPlayerContinue();//show continue menu after combat
@@ -158,6 +164,9 @@ public class Encounter implements Serializable {
             if(stage <= 6){
                 System.out.println("Welcome to stage: " + getStage());
             }
+        }
+        if(StartGame.game != null){
+            StartGame.game.savePlayerScore(playerScore);
         }
         eg.displayGameFinish();
     }
@@ -215,6 +224,20 @@ public class Encounter implements Serializable {
         }
     }
     
+    private void killPoints(EnemyType enemyType){
+        int points = switch (enemyType) {
+            case SLIME -> 5;
+            case GOBLIN -> 10;
+            case ZOMBIE -> 20;
+            case MONKEY -> 30;
+            case LIZARDMAN -> 40;
+            case DEMON -> 100;
+            case BOSSBABY -> 200;
+        };
+        playerScore += points;
+        System.out.println("You earned " + points + " points! Total score: " + playerScore);
+    }
+    
     //getters and setters
     public int getStage(){
         return stage;
@@ -236,5 +259,13 @@ public class Encounter implements Serializable {
 
     public int getRemainingEnemies() {
         return getTotalEnemiesInStage() - getEnemies();
+    }
+    
+    public int getPlayerScore(){
+        return playerScore;
+    }
+    
+    public void setPlayerScore(int score){
+        this.playerScore = score;
     }
 }

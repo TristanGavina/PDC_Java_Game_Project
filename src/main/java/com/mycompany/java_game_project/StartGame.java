@@ -49,6 +49,9 @@ public class StartGame implements Serializable{
     private IStartMenu sm;
     final IUserInputs input;
     public static StartGame game;
+    private Database db;
+    private String currentPlayerName;
+    private int currentPlayerScore;
     
     public StartGame(
             IUserInputs input,
@@ -63,7 +66,7 @@ public class StartGame implements Serializable{
         
         this.input = input;
         this.eg = eg;
-        
+        this.sm = sm;
         this.im = im;
         this.gd = gd;
         this.ih = ih;
@@ -71,7 +74,9 @@ public class StartGame implements Serializable{
         this.log = log;
         this.cm = cm;
         this.gameRunning = true;
-        this.sm = new StartMenu(this);
+        this.db = new Database();
+        this.db.dbsetup();
+        
     }
     
     public void menu(){
@@ -117,7 +122,14 @@ public class StartGame implements Serializable{
             if(name.length() < 3 || name.length() > 7){
                 ih.invalidInput("Sorry name must be 3 to 7 letters only...");
             } else {
-                break;
+                Data userData = db.checkName(name, "default");
+                if(userData.loginFlag) {
+                    this.currentPlayerName = name;
+                    this.currentPlayerScore = userData.currentScore;
+                    break;
+                } else {
+                    ih.invalidInput("Database error occurred. Please try again.");
+                }
             }
         }
         player = new Player(name); // creates player with name
@@ -170,5 +182,36 @@ public class StartGame implements Serializable{
             System.out.println("Error writing combat log to file: " + e.getMessage());
         }
         
+    }
+    
+    public void setGame(StartGame game) {
+        this.game = game;
+    }
+    
+    public void startGameWithName(String name, int score){
+        this.currentPlayerName = name;
+        this.currentPlayerScore = score;
+        
+        player = new Player(name);
+        
+        im.displayWelcome(name);
+        gd.displayGameDetails();
+        input.getInput();
+        encounter = new Encounter(player, input, eg, gd, ih, eui, log, cm);
+        encounter.encountered();
+    }
+    public void savePlayerScore(int finalScore){
+        if(currentPlayerName != null){
+            db.quitGame(finalScore, currentPlayerName);
+            System.out.println(currentPlayerName +" scored " + finalScore);
+        }
+    }
+    
+    public String getCurrentPlayerName(){
+        return currentPlayerName;
+    }
+    
+    public int getCurrentPlayerScore(){
+        return currentPlayerScore;
     }
 }

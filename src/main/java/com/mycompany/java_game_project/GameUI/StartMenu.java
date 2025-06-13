@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import com.mycompany.java_game_project.Interfaces.IStartMenu;
+import com.mycompany.java_game_project.Java_Game_Project;
 import com.mycompany.java_game_project.SaveHandler;
 import com.mycompany.java_game_project.StartGame;
 import java.awt.*;
@@ -38,10 +39,12 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
     private Font buttonFont = new Font("Times New Roman", Font.BOLD, 25);
     private Dimension buttonSize = new Dimension(300, 60);
     private StartGame game;
+    private Java_Game_Project frame;
     
-    public StartMenu(StartGame game){
-        this.game = game;
+    public StartMenu(Java_Game_Project frame) {
         this.image = new ImageIcon("./Images/startMenu.jpg").getImage();
+        this.frame = frame;
+        //this.game = game;
         showUI();
     }
     
@@ -97,7 +100,10 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
         add(bottonPosition, BorderLayout.SOUTH);
         
         // Add action listeners
-        start.addActionListener(e -> game.checkSaveFile());
+        start.addActionListener(e -> {
+            frame.showIntroMenu();
+            //game.checkSaveFile();
+                });
         
         load.addActionListener((ActionEvent e) -> {
             SaveHandler.loadGame();
@@ -122,6 +128,8 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
             System.out.println("Error reading playerIntro menu: " + e.getMessage());
         }
     }
-    
+    public void setGame(StartGame game) {
+        this.game = game;
+    }
 }
 

@@ -9,9 +9,9 @@ package com.mycompany.java_game_project;
  * @author trist
  */
 public class Data {
-    boolean loginFlag = false;
-    boolean quitFlag = false;
-    int currentScore = 0;
-    int num1 = 0;
-    int num2 = 0;
+    public boolean loginFlag = false;
+    public boolean quitFlag = false;
+    public int currentScore = 0;
+    public int num1 = 0;
+    public int num2 = 0;
 }

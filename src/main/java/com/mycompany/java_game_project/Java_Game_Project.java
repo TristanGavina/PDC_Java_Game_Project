@@ -23,9 +23,12 @@ import com.mycompany.java_game_project.GameUI.InvalidHandler;
 import com.mycompany.java_game_project.GameUI.StartMenu;
 import com.mycompany.java_game_project.GameUI.WriteFiles;
 import static com.mycompany.java_game_project.StartGame.game;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.io.*;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -34,12 +37,16 @@ import javax.swing.JFrame;
  */
     
 public final class Java_Game_Project extends JFrame{  
-    public static void main(String[] args) {
-        
+    
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
+    private StartMenu startMenu;
+    private IntroductionMenu introMenu;
+    private StartGame game;
+    
+    public Java_Game_Project(){
         IUserInputs userInput = new UserInputProvider();
         IEndGame eg = new EndGameUI();
-        //IStartMenu sm = new StartMenu(game);
-        IIntroMenu im = new IntroductionMenu();
         IGameDetails gd = new GameDetails();
         IInvalidHandler ih = new InvalidHandler();
         IEncounterUI eui = new EncounterUI();
@@ -47,18 +54,42 @@ public final class Java_Game_Project extends JFrame{
         ICombatMenu cm = new CombatMenu();
         
         //startGame
-        StartGame game = new StartGame(userInput, eg, null, im, gd, ih, eui, log, cm);
-        SaveHandler.game = game; // Link the SaveHandler to this game instance
-        game.menu(); //launches the game
-        JFrame frame = new JFrame("Java Game Project");
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setBackground(Color.black);
-        frame.setLocationRelativeTo(null);
-        StartMenu start = new StartMenu(game);
-        frame.add(start);
-        frame.setVisible(true);
+        startMenu = new StartMenu(this);
+        introMenu = new IntroductionMenu(this);
+        
+        game = new StartGame(userInput, eg, startMenu, introMenu, gd, ih, eui, log, cm);
+        SaveHandler.game = game;
+        //game.menu(); //launches the game
+        
+        //cardlayout
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
+        
+        startMenu.setGame(game);
+        //introMenu = new IntroductionMenu(this);
+        
+        
+        cardPanel.add(startMenu, "StartMenu");
+        cardPanel.add((JPanel)introMenu, "IntroMenu");
+        
+        add(cardPanel);
+        setTitle("Java Game Project");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        getContentPane().setBackground(Color.black);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+            
+    public void showIntroMenu() {
+        cardLayout.show(cardPanel, "IntroMenu");
+        introMenu.displayIntro();
+    }
+    
+    
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Java_Game_Project::new);
     }
     
     
