@@ -10,11 +10,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import com.mycompany.java_game_project.Interfaces.IStartMenu;
+import com.mycompany.java_game_project.SaveHandler;
+import com.mycompany.java_game_project.StartGame;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 /**
  *
@@ -31,9 +34,13 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
     private JButton start;
     private JButton load;
     private JButton quit;
-    Font titleFont = new Font("Times New Roman", Font.PLAIN, 100);
+    private Font titleFont = new Font("Times New Roman", Font.BOLD, 100);
+    private Font buttonFont = new Font("Times New Roman", Font.BOLD, 25);
+    private Dimension buttonSize = new Dimension(300, 60);
+    private StartGame game;
     
-    public StartMenu(){
+    public StartMenu(StartGame game){
+        this.game = game;
         this.image = new ImageIcon("./Images/startMenu.jpg").getImage();
         showUI();
     }
@@ -47,7 +54,7 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
     public void showUI(){
         setLayout(new BorderLayout());
         
-        //title setup
+        //TITLE setup
         title = new JLabel("PDC RPG GAME", SwingConstants.CENTER);
         title.setForeground(Color.WHITE);
         title.setFont(titleFont);
@@ -58,7 +65,7 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
         titlePanel.add(title, BorderLayout.CENTER);        
         add(titlePanel, BorderLayout.NORTH);
         
-        //buttons setup
+        //BUTTONS setup
         start = new JButton("START NEW GAME");
         load = new JButton("LOAD GAME");
         quit = new JButton("QUIT GAME");
@@ -67,18 +74,41 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setOpaque(false);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(150, 100, 150, 100));
-        buttonPanel.add(start);
-        buttonPanel.add(load);
-        buttonPanel.add(quit);
         
-        JPanel botRightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        botRightButtons.setOpaque(false);
-        botRightButtons.add(buttonPanel);
         
-        add(buttonPanel, BorderLayout.SOUTH);
+
+        JButton[] buttons = { start, load, quit };
+        for (JButton button : buttons) {
+            button.setFont(buttonFont);
+            button.setPreferredSize(buttonSize);
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setMaximumSize(buttonSize);
+            button.setFocusPainted(false);
+            button.setMargin(new Insets(10, 20, 10, 20));
+            buttonPanel.add(Box.createVerticalStrut(25));
+            buttonPanel.add(button);
+        }
+        
+        JPanel bottonPosition = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        
+        bottonPosition.setOpaque(false);
+        bottonPosition.add(buttonPanel);
+        
+        add(bottonPosition, BorderLayout.SOUTH);
         
         // Add action listeners
+        start.addActionListener(e -> game.checkSaveFile());
+        
+        load.addActionListener((ActionEvent e) -> {
+            SaveHandler.loadGame();
+            if(SaveHandler.game != null && SaveHandler.game != game){
+                SaveHandler.game.menu();
+            } else {
+                game.ih.loadError("No save game found! Error loading game.");
+            }
+        });
         quit.addActionListener(e -> System.exit(0));
+        
     }
     
     @Override
@@ -93,9 +123,5 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
         }
     }
     
-    // Getter methods for controller to access buttons
-    public JButton getStartButton() { return start; }
-    public JButton getLoadButton() { return load; }
-    public JButton getQuitButton() { return quit; }
 }
 

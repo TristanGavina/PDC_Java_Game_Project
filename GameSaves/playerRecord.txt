@@ -1,7 +1,7 @@
 |=============================================|
 |                Player Record                
 |           Name: Tristan
-|           HP: 100
+|           HP: 99
 |           Defense: 10
 |           Attack: 20
 |           Current Stage: 2

@@ -39,16 +39,16 @@ public class StartGame implements Serializable{
     Player player;
     Encounter encounter;
     private boolean gameRunning;
-    private final ICombatLog log;
-    private final ICombatMenu cm;
-    private final IEncounterUI eui;
-    private final IEndGame eg;
-    private final IGameDetails gd;
-    private final IIntroMenu im;
-    final IInvalidHandler ih;
-    private final IStartMenu sm;
+    private ICombatLog log;
+    private ICombatMenu cm;
+    private IEncounterUI eui;
+    private IEndGame eg;
+    private IGameDetails gd;
+    private IIntroMenu im;
+    public IInvalidHandler ih;
+    private IStartMenu sm;
     final IUserInputs input;
-    static StartGame game;
+    public static StartGame game;
     
     public StartGame(
             IUserInputs input,
@@ -63,7 +63,7 @@ public class StartGame implements Serializable{
         
         this.input = input;
         this.eg = eg;
-        this.sm = sm;
+        
         this.im = im;
         this.gd = gd;
         this.ih = ih;
@@ -71,6 +71,7 @@ public class StartGame implements Serializable{
         this.log = log;
         this.cm = cm;
         this.gameRunning = true;
+        this.sm = new StartMenu(this);
     }
     
     public void menu(){

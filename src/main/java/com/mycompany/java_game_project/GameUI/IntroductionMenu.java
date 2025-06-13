@@ -8,7 +8,17 @@ import com.mycompany.java_game_project.Interfaces.IIntroMenu;
 import java.io.BufferedReader;
 
 import java.io.FileReader;
-
+import java.io.IOException;
+import java.io.Serializable;
+import com.mycompany.java_game_project.Interfaces.IStartMenu;
+import com.mycompany.java_game_project.SaveHandler;
+import com.mycompany.java_game_project.StartGame;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -16,7 +26,7 @@ import java.io.Serializable;
  *
  * @author trist
  */
-public class IntroductionMenu implements Serializable, IIntroMenu {
+public class IntroductionMenu extends JFrame implements Serializable, IIntroMenu {
     private static final long serialVersionUID = 1L;
     private static final String INTRO_PATH = "GameUI_text_files/playerIntro.txt";
     

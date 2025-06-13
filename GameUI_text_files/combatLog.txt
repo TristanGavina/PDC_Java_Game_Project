@@ -2,3 +2,9 @@
 SLIME took 20 damage!
 > Tristan attacks for 20 damage!
 SLIME took 20 damage!
+> Tristan attacks for 20 damage!
+GOBLIN took 17 damage!
+> GOBLIN attacks for 1 damage!
+Tristan took 1 damage!
+> Tristan attacks for 20 damage!
+GOBLIN took 17 damage!
