@@ -56,7 +56,7 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
     
     public void showUI(){
         setLayout(new BorderLayout());
-        //TITLE setup
+        //INTRO setup
         intro = new JLabel("        Welcome to Tristan PDC project 1!      ", SwingConstants.CENTER);
         intro.setForeground(Color.WHITE);
         intro.setFont(introFont);
@@ -76,6 +76,7 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
         introPanel.add(intro2);
         add(introPanel, BorderLayout.NORTH);
         
+        //USER input setup
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
         inputPanel.setOpaque(false);
