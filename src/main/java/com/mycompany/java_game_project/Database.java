@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  */
 public class Database {
     Connection conn = null;
-    String url = "jdbc:derby:UserDB;create=true";
+    String url = "jdbc:derby:GameDB;create=true";
     
     String dbusername = "APP";
     String dbpassword = "";
@@ -139,6 +139,54 @@ public class Database {
             }
         } catch (SQLException ex) {
             System.out.println("Error closing database connection: " + ex.getMessage());
+        }
+    }
+    
+    //Establish connection
+    public void establishConnection() {
+        try {
+            // Load the Derby client driver
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+
+            // Establish the connection
+            conn = DriverManager.getConnection(url, dbusername, dbpassword);
+            System.out.println("Connection established successfully.");
+
+        } catch (ClassNotFoundException e) {
+            System.out.println("JDBC Driver not found: " + e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Failed to connect to the database: " + e.getMessage());
+        }
+    }
+    
+    public ResultSet queryDB(String sql) {
+
+        Connection connection = this.conn;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(sql);
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return resultSet;
+    }
+
+    public void updateDB(String sql) {
+
+        Connection connection = this.conn;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(sql);
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }

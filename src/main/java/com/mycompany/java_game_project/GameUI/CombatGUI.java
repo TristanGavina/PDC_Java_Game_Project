@@ -28,6 +28,22 @@ public class CombatGUI extends JPanel {
     
     public void showUI(){
         setLayout(new BorderLayout());
+        
+        /**
+         * very top left panel for stage
+         * 
+         * bottom panel for user/player
+         * south/very bottom panel for player action
+         * bottom right (above player action) player rest UI (only if player defeated enemy
+         * bottom left-right (right of player model) show player stats
+         * 
+         * inside panel for player action will be action buttons (atk/heal/def/details/quit)
+         * 
+         * top right enemy image
+         * top right-right (right of enemy) show stats (atk/def/hp)
+         * 
+         */
+        
     }
     
     @Override
