@@ -28,32 +28,25 @@ import java.util.Map;
  */
 public class Encounter implements Serializable {
     private static final long serialVersionUID = 1L; //compatibility for other classes
-    private final Player player;
+    private Player player;
     private Combat combat;
     private int stage;
     private int enemies;
     private EnemyType defeatedLast;    
-    private final ICombatLog log;
-    private final ICombatMenu cm;
-    private final IEncounterUI eui;
-    private final IEndGame eg;
-    private final IGameDetails gd;
-    final IInvalidHandler ih;
-    final IUserInputs input;
+    private ICombatLog log;
+    private ICombatMenu cm;
+    private IEncounterUI eui;
+    private IEndGame eg;
+    private IGameDetails gd;
+    private IInvalidHandler ih;
+    private IUserInputs input;
     
     private int playerScore = 0;
     
     //store enemy type by stage
     private final Map<Integer, ArrayList<EnemyType>> stageEnemies = new HashMap<>();
         
-    public Encounter(Player player,
-            IUserInputs input,
-            IEndGame eg, 
-            IGameDetails gd, 
-            IInvalidHandler ih, 
-            IEncounterUI eui,
-            ICombatLog log, 
-            ICombatMenu cm) {
+    public Encounter(Player player, IUserInputs input, IEndGame eg, IGameDetails gd, IInvalidHandler ih, IEncounterUI eui, ICombatLog log, ICombatMenu cm) {
         this.player = player;
         this.input = input;
         this.stage = 1;
@@ -65,6 +58,13 @@ public class Encounter implements Serializable {
         this.log = log;
         this.cm = cm;
         
+        enemyStages();
+    }
+
+    public Encounter() {
+        this.stage = 1;
+        this.enemies = 0;
+        this.playerScore = 0;
         enemyStages();
     }
     

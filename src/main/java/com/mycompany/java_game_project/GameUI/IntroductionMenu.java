@@ -6,14 +6,23 @@ package com.mycompany.java_game_project.GameUI;
 
 import com.mycompany.java_game_project.Data;
 import com.mycompany.java_game_project.Database;
+import com.mycompany.java_game_project.Encounter;
+import com.mycompany.java_game_project.Interfaces.ICombatLog;
+import com.mycompany.java_game_project.Interfaces.ICombatMenu;
+import com.mycompany.java_game_project.Interfaces.IEncounterUI;
+import com.mycompany.java_game_project.Interfaces.IEndGame;
+import com.mycompany.java_game_project.Interfaces.IGameDetails;
 import com.mycompany.java_game_project.Interfaces.IIntroMenu;
+import com.mycompany.java_game_project.Interfaces.IInvalidHandler;
 import java.io.BufferedReader;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import com.mycompany.java_game_project.Interfaces.IStartMenu;
+import com.mycompany.java_game_project.Interfaces.IUserInputs;
 import com.mycompany.java_game_project.Java_Game_Project;
+import com.mycompany.java_game_project.Player;
 import com.mycompany.java_game_project.SaveHandler;
 import com.mycompany.java_game_project.StartGame;
 import static com.mycompany.java_game_project.StartGame.game;
@@ -140,6 +149,10 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
     }
     
     private void startGameWithUser(String name, int currentScore){
+        Player player = new Player(name, currentScore);
+        Encounter encounter = new Encounter();
+        
+        frame.startCombat(player, encounter);
         frame.showCombat();
         
         if(game != null){

@@ -13,11 +13,26 @@ import java.io.*;
 public class Player extends GameObjects implements Serializable{
     private static final long serialVersionUID = 1L;
     private final String name;
+    private int currentScore = 0;
     
     public Player(String name) {
         super(100, 10, 20); //HP , DEF, ATK
         this.name = name;
     }
+    
+    public Player(String name, int currentScore) {
+        super(100, 10, 20);
+        this.name = name;
+        this.currentScore = currentScore;
+    }
+    
+    public int getCurrentScore() { 
+        return currentScore; 
+    }
+    public void setCurrentScore(int score) {
+        this.currentScore = score;
+    }
+    
     public String getName(){
         return name;
     }

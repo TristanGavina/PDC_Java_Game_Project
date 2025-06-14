@@ -39,6 +39,13 @@ public class Enemy extends GameObjects implements Serializable{
         return health;
     }
     
+    public int getAttack(){
+        return type.getAttack();
+    }
+    
+    public int getDefence(){
+        return type.getDefense();
+    }
     @Override
     public int attack(GameObjects target){
         int damageDealt = Math.max(attack - target.getDefense(), 1);

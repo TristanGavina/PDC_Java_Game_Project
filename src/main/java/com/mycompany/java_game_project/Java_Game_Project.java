@@ -45,6 +45,8 @@ public final class Java_Game_Project extends JFrame{
     private IntroductionMenu introMenu;
     private StartGame game;
     private CombatGUI combatMenu;
+    private Player currentPlayer;
+    private Encounter currentEncounter;
     
     public Java_Game_Project(){
         IUserInputs userInput = new UserInputProvider();
@@ -57,7 +59,6 @@ public final class Java_Game_Project extends JFrame{
         
         startMenu = new StartMenu(this);
         introMenu = new IntroductionMenu(this);
-        combatMenu = new CombatGUI(this);
         
         //startGame
         game = new StartGame(userInput, eg, startMenu, introMenu, gd, ih, eui, log, cm);
@@ -74,7 +75,6 @@ public final class Java_Game_Project extends JFrame{
         
         cardPanel.add(startMenu, "StartMenu");
         cardPanel.add((JPanel)introMenu, "IntroMenu");
-        cardPanel.add((JPanel) combatMenu, "Combat");
         
         add(cardPanel);
         setTitle("Java Game Project");
@@ -93,10 +93,39 @@ public final class Java_Game_Project extends JFrame{
         cardLayout.show(cardPanel, "Combat");
     }
     
+    public void startCombat(Player player, Encounter encounter){
+        this.currentPlayer = player;
+        this.currentEncounter = encounter;
+        
+        //remove exisiting combat panel
+        if (combatMenu != null) {
+            cardPanel.remove(combatMenu);
+        }
+        
+        //combat gui with player and enemy data
+        combatMenu = new CombatGUI(this, player, encounter);
+        cardPanel.add((JPanel) combatMenu, "Combat");
+        
+        cardPanel.revalidate();
+        cardPanel.repaint();
+    }
+    
+    public void showCombat(Player player, Encounter encounter){
+        startCombat(player, encounter);
+        showCombat();
+    }
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Java_Game_Project::new);
     }
     
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+    
+    public Encounter getCurrentEncounter() {
+        return currentEncounter;
+    }
     
 }
 

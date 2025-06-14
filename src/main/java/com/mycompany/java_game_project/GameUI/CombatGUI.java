@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 /**
@@ -44,6 +45,7 @@ public class CombatGUI extends JPanel {
     private Font stageFont = new Font("Times New Roman", Font.BOLD, 25);
     private Font buttonFont = new Font("Times New Roman", Font.BOLD, 15);
     private Font combatFont = new Font("Times New Roman", Font.BOLD, 15);
+    private Font statFont = new Font("Times New Roman", Font.BOLD, 25);
     private JButton attack, defend, heal, detail, quit;
     private JButton cont, rest, quit2;
     private Dimension buttonSize = new Dimension(150, 40);
@@ -55,9 +57,10 @@ public class CombatGUI extends JPanel {
     private Encounter encounter;
     private boolean inCombat = false;
     private boolean phase = true;
+    private JPanel currentBottomPanel;
     
     private int currentStage = 1;
-    private int enemyDefeat = 0;
+    private int enemiesDefeated = 0;
 
     private Java_Game_Project frame;
     
@@ -67,7 +70,7 @@ public class CombatGUI extends JPanel {
         this.encounter = encounter;
         this.image = new ImageIcon("./Images/combat.jpg").getImage();
         showUI();
-        startNextCombat();
+        nextStage();
     }
     
     public void showUI(){
@@ -98,18 +101,19 @@ public class CombatGUI extends JPanel {
         JPanel stagePanel = new JPanel();
         stagePanel.setOpaque(false);
         stagePanel.setLayout(new BoxLayout(stagePanel, BoxLayout.Y_AXIS));
-        //stagePanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
         stageCount.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
         stagePanel.add(stageCount, BorderLayout.CENTER);
         add(stagePanel, BorderLayout.NORTH);
         
         //shows stats
         showStats();
+        
         //combat/action buttons
         combatButtons();
+        
         //resting menu
         restingButtons();
+        
         //combatLog
         combatLog();
         
@@ -121,13 +125,13 @@ public class CombatGUI extends JPanel {
         //show player stat
         playerStat = new JLabel();
         playerStat.setForeground(Color.WHITE);
-        playerStat.setFont(combatFont);
+        playerStat.setFont(statFont);
         playerStat.setVerticalAlignment(JLabel.TOP);
         
         //show enemy stat
         enemyStat = new JLabel();
         enemyStat.setForeground(Color.WHITE);
-        enemyStat.setFont(combatFont);
+        enemyStat.setFont(statFont);
         enemyStat.setVerticalAlignment(JLabel.TOP);
         
         updateStats();
@@ -150,7 +154,7 @@ public class CombatGUI extends JPanel {
         attack.addActionListener(e -> doAttack());
         defend.addActionListener(e -> doDefend());
         heal.addActionListener(e -> doHeal());
-        detail.addActionListener(e -> showDetail());
+        detail.addActionListener(e -> showDetails());
         quit.addActionListener(e -> quitGame());
     }
     
@@ -191,18 +195,12 @@ public class CombatGUI extends JPanel {
         logPanel.setOpaque(false);
         logPanel.add(logScrollPane, BorderLayout.CENTER);
         
-        add(logPanel, BorderLayout.SOUTH);
+        add(logPanel, BorderLayout.CENTER);
     }
     
     private void combatInterface(){
-        Component[] components = getComponents();
-        for(Component comp : components){
-            if (comp instanceof JPanel && 
-                ((JPanel) comp).getComponentCount() > 0 && 
-                ((JPanel) comp).getComponent(0) instanceof JPanel) {
-                remove(comp);
-                break;
-            }
+        if (currentBottomPanel != null) {
+            remove(currentBottomPanel);
         }
         
         //button panel
@@ -225,27 +223,21 @@ public class CombatGUI extends JPanel {
         statPanel.add(playerStat, BorderLayout.WEST);
         statPanel.add(enemyStat, BorderLayout.EAST);
         
-        //put everything in 1 panel
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setOpaque(false);
-        bottomPanel.add(statPanel, BorderLayout.CENTER);
-        bottomPanel.add(buttonWrapper, BorderLayout.EAST);
-        
-        add(bottomPanel, BorderLayout.SOUTH);
-        phase = true;
+        currentBottomPanel = new JPanel(new BorderLayout());
+        currentBottomPanel.setOpaque(false);
+        currentBottomPanel.add(statPanel, BorderLayout.CENTER);
+        currentBottomPanel.add(buttonWrapper, BorderLayout.EAST);
+
+        add(currentBottomPanel, BorderLayout.SOUTH);
+        phase = true; // combat phase
         revalidate();
         repaint();
     }
     
     private void showRestingPanel(){
         //removing existing bottom panel
-        Component[] components = getComponents();
-        for (Component comp : components) {
-            if (comp instanceof JPanel && 
-                ((JPanel) comp).getComponentCount() > 0) {
-                remove(comp);
-                break;
-            }
+        if (currentBottomPanel != null) {
+            remove(currentBottomPanel);
         }
         
         JPanel buttonPosition = new JPanel(new GridLayout(2, 2, 5, 5));
@@ -259,8 +251,9 @@ public class CombatGUI extends JPanel {
         buttonWrapper.setOpaque(false);
         buttonWrapper.add(buttonPosition);
         
-        add(buttonWrapper, BorderLayout.SOUTH);
-        phase = false;
+        currentBottomPanel = buttonWrapper;
+        add(currentBottomPanel, BorderLayout.SOUTH);
+        phase = false; // rest phase
         revalidate();
         repaint();
     }
@@ -279,10 +272,10 @@ public class CombatGUI extends JPanel {
             writeCombatLog(currentEnemy.getType() + " has been defeated!");
             combatEnd();
             return;
-            
-            //enemy attacks
-            enemyAttack();
         }
+        
+        //enemy attacks
+        enemyAttack();
     }
     
     private void doDefend(){
@@ -343,20 +336,44 @@ public class CombatGUI extends JPanel {
                         "Player HP: " + player.getHealth() + "/" + player.getMaxHP() + "\n" +
                         "Player Attack: " + player.getAttack() + "\n" +
                         "Player Defense: " + player.getDefense() + "\n";
-        
-        if (currentEnemy != null) {
-            details += "Current Enemy: " + currentEnemy.getType() + "\n" +
-                      "Enemy HP: " + currentEnemy.getHealth() + "\n" +
-                      "Enemy Attack: " + currentEnemy.getAttack() + "\n" +
-                      "Enemy Defense: " + currentEnemy.getDefense() + "\n";
-        }
+//        
+//        if (currentEnemy != null) {
+//            details += "Current Enemy: " + currentEnemy.getType() + "\n" +
+//                      "Enemy HP: " + currentEnemy.getHealth() + "\n" +
+//                      "Enemy Attack: " + currentEnemy.getAttack() + "\n" +
+//                      "Enemy Defense: " + currentEnemy.getDefense() + "\n";
+//        }
         
         JOptionPane.showMessageDialog(this, details, "Game Details", JOptionPane.INFORMATION_MESSAGE);
     }
     
     private void nextFight(){
         clearCombatLog();
-        nextStage();
+        Map<Integer, ArrayList<EnemyType>> stageEnemies = enemyStages();
+        ArrayList<EnemyType> currentStageEnemies = stageEnemies.get(currentStage);
+
+        if (currentStageEnemies != null && enemiesDefeated < currentStageEnemies.size()) {
+            EnemyType nextEnemy = currentStageEnemies.get(enemiesDefeated);
+            currentEnemy = new Enemy(nextEnemy);
+            inCombat = true;
+
+            writeCombatLog("You encounter a " + currentEnemy.getType() + "!");
+            updateStats();
+            combatInterface();
+        } else {
+            nextStage();
+        }
+    }
+    
+    private Map<Integer, ArrayList<EnemyType>> enemyStages() {
+        Map<Integer, ArrayList<EnemyType>> stageEnemies = new HashMap<>();
+        stageEnemies.put(1, new ArrayList<>(List.of(EnemyType.SLIME)));
+        stageEnemies.put(2, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN)));
+        stageEnemies.put(3, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN, EnemyType.ZOMBIE)));
+        stageEnemies.put(4, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN, EnemyType.ZOMBIE, EnemyType.MONKEY)));
+        stageEnemies.put(5, new ArrayList<>(List.of(EnemyType.SLIME, EnemyType.GOBLIN, EnemyType.ZOMBIE, EnemyType.MONKEY, EnemyType.LIZARDMAN)));
+        stageEnemies.put(6, new ArrayList<>(List.of(EnemyType.DEMON, EnemyType.BOSSBABY)));
+        return stageEnemies;
     }
     
     private void playerRest(){
@@ -394,7 +411,123 @@ public class CombatGUI extends JPanel {
             return;
         }
         
+        ArrayList<EnemyType> currentStageEnemy = stageEnemies.get(currentStage);
+        if(currentStageEnemy == null){
+            gameFinish();
+            return;
+        }
         
+        //checking if all enemies in stage have been defeated
+        if(enemiesDefeated >= currentStageEnemy.size()){
+            currentStage++;
+            enemiesDefeated = 0;
+            updateStage();
+            writeCombatLog("=== STAGE " + currentStage + " COMPLETE! ===");
+            writeCombatLog("Moving to next stage...");
+            nextStage();
+            return;
+        }
+        
+        //starting combat with next enemy in stage
+        EnemyType nextEnemy = currentStageEnemy.get(enemiesDefeated);
+        currentEnemy = new Enemy(nextEnemy);
+        inCombat = true;
+        
+        writeCombatLog("You have encountered " + currentEnemy.getType());
+        updateStats();
+        combatInterface();
+    }
+    
+    private void combatEnd(){
+        inCombat = false;
+        enemiesDefeated++;
+        
+        int points = killPoints(currentEnemy.getType());
+        writeCombatLog(currentEnemy.getType() + " dropped " + points);
+        combatInterface();
+        
+        Map<Integer, ArrayList<EnemyType>> stageEnemies = enemyStages();
+        ArrayList<EnemyType> currentStageEnemies = stageEnemies.get(currentStage);
+
+        if (enemiesDefeated >= currentStageEnemies.size()) {
+            writeCombatLog("=== STAGE " + currentStage + " COMPLETE! ===");
+            currentStage++;
+            enemiesDefeated = 0;
+            updateStage();
+
+            if (currentStage > 6) {
+                gameFinish();
+                return;
+            }
+            writeCombatLog("Moving to stage " + currentStage + "...");
+        }
+        
+        showRestingPanel();
+    }
+    
+    private int killPoints(EnemyType enemyType){
+        return switch(enemyType){
+            case SLIME -> 5;
+            case GOBLIN -> 10;
+            case ZOMBIE -> 20;
+            case MONKEY -> 30;
+            case LIZARDMAN -> 40;
+            case DEMON -> 100;
+            case BOSSBABY -> 200;
+        };
+    }
+    
+    private void gameOver(){
+        inCombat = false;
+        JOptionPane.showMessageDialog(this, 
+                "You have been defeated",
+                "GAME OVER!!!",
+                JOptionPane.ERROR_MESSAGE);
+        System.exit(0);
+    }
+    
+    private void gameFinish(){
+        JOptionPane.showMessageDialog(this,
+                "    CONGRATULATIONS ON BEATING THE GAME!!!   ",
+                "GAME COMPLETE",
+                JOptionPane.INFORMATION_MESSAGE);
+        System.exit(0);
+    }
+    
+    private void updateStats(){
+       if (player != null) {
+            playerStat.setText("<html><div style='padding: 10px;'>" +
+                "<b>" + player.getName() + "</b><br>" +
+                "HP: " + player.getHealth() + "/" + player.getMaxHP() + "<br>" +
+                "ATK: " + player.getAttack() + "<br>" +
+                "DEF: " + player.getDefense() +
+                (player.isDefending() ? " (DEFENDING)" : "") + 
+                "</div></html>");
+        }
+        
+        if (currentEnemy != null) {
+            enemyStat.setText("<html><div style='padding: 10px;'>" +
+                "<b>" + currentEnemy.getType() + "</b><br>" +
+                "HP: " + currentEnemy.getHealth() + "<br>" +
+                "ATK: " + currentEnemy.getAttack() + "<br>" +
+                "DEF: " + currentEnemy.getDefense() + 
+                "</div></html>");
+        }
+    }
+    
+    private void updateStage(){
+        stageCount.setText("Current stage: Stage " + currentStage);
+    }
+    
+    private void writeCombatLog(String msg){
+        SwingUtilities.invokeLater(() -> {
+            combatLog.append(msg + "\n");
+            combatLog.setCaretPosition(combatLog.getDocument().getLength());
+        });
+    }
+    
+    private void clearCombatLog(){
+        combatLog.setText("");
     }
     
     private void buttonStyle(JButton button){
