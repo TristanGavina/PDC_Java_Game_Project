@@ -22,7 +22,6 @@ public class UserInputProvider implements IUserInputs, Serializable {
         this.scan= new Scanner(System.in);
     }
     
-    @Override
     public String getInput(){
         if (scan == null) {
             scan = new Scanner(System.in);

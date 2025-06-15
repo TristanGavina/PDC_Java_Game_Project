@@ -1,13 +1,14 @@
+Mon Jun 16 06:43:37 NZST 2025 : Apache Derby Network Server - 10.14.2.0 - (1828579) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Mon Jun 16 00:24:42 NZST 2025:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-0197-738c-9522-000006cedc98 
+Mon Jun 16 06:43:41 NZST 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0197-74e7-7d9a-ffffb99cd333 
 on database directory C:\Users\trist\OneDrive\Documents\GitHub\PDC_Java_Game_Project\GameDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
-Loaded from file:/C:/Users/trist/.m2/repository/org/apache/derby/derby/10.17.1.0/derby-10.17.1.0.jar
+Loaded from file:/C:/Users/trist/OneDrive/Documents/GitHub/PDC_Java_Game_Project/db-derby-10.14.2.0-bin/lib/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=21.0.5+9-LTS-239
-user.dir=C:\Users\trist\OneDrive\Documents\GitHub\PDC_Java_Game_Project
+user.dir=C:\Users\trist\OneDrive\Documents\GitHub\PDC_Java_Game_Project\db-derby-10.14.2.0-bin
 os.name=Windows 11
 os.arch=amd64
 os.version=10.0
-derby.system.home=null
+derby.system.home=C:\Users\trist\OneDrive\Documents\GitHub\PDC_Java_Game_Project
 Database Class Loader started - derby.database.classpath=''

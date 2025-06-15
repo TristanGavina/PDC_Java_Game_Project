@@ -22,7 +22,9 @@ public class Enemy extends GameObjects implements Serializable{
     
     @Override
     public void takeDamage(int damage){
-        health = Math.max(health - damage, 0);
+        if (damage > 0) {
+            health = Math.max(health - damage, 0); // ensures that hp will not go below 0
+        }
     }
     
     @Override

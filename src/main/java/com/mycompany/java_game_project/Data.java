@@ -12,6 +12,4 @@ public class Data {
     public boolean loginFlag = false;
     public boolean quitFlag = false;
     public int currentScore = 0;
-    public int num1 = 0;
-    public int num2 = 0;
 }

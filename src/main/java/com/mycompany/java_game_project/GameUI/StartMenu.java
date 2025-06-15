@@ -34,7 +34,6 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
     private JPanel buttonPanel;
     private Image image;
     private JButton start;
-    private JButton load;
     private JButton quit;
     private Font titleFont = new Font("Times New Roman", Font.BOLD, 100);
     private Font buttonFont = new Font("Times New Roman", Font.BOLD, 25);
@@ -71,7 +70,6 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
         
         //BUTTONS setup
         start = new JButton("START NEW GAME");
-        load = new JButton("LOAD GAME");
         quit = new JButton("QUIT GAME");
         
         buttonPanel = new JPanel();
@@ -81,7 +79,7 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
         
         
 
-        JButton[] buttons = { start, load, quit };
+        JButton[] buttons = { start, quit };
         for (JButton button : buttons) {
             button.setFont(buttonFont);
             button.setPreferredSize(buttonSize);
@@ -106,14 +104,6 @@ public class StartMenu extends JPanel implements Serializable, IStartMenu  {
             //game.checkSaveFile();
                 });
         
-        load.addActionListener((ActionEvent e) -> {
-            SaveHandler.loadGame();
-            if(SaveHandler.game != null && SaveHandler.game != game){
-                SaveHandler.game.menu();
-            } else {
-                game.ih.loadError("No save game found! Error loading game.");
-            }
-        });
         quit.addActionListener(e -> System.exit(0));
         
     }

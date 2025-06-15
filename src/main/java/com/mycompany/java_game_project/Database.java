@@ -31,6 +31,25 @@ public class Database {
             } else {
                 System.out.println("Table " + tableName + " already exists.");
             }
+            
+            String gamesTable = "GAMESESSIONS";
+            if(!checkTableExisting(gamesTable)){
+                String createTableSQL = "CREATE TABLE " + gamesTable + " (" +
+                        "gameid INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "+
+                        "userid VARCHAR(12), "+
+                        "currentscore INT, " +
+                        "currentstage INT, " +
+                        "enemiesdefeated INT, " +
+                        "gamestart TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "+
+                        "gameend TIMESTAMP, " +
+                        "gamestatus VARCHAR(20) DEFAULT 'IN_PROGRESS'" +
+                        ")";
+                statement.executeUpdate(createTableSQL);
+                System.out.println("Table " + gamesTable + " created successfully.");
+            } else {
+                System.out.println("Table " + gamesTable + " already exists.");
+            }
+            
             statement.close();
         } catch (SQLException e){
             System.out.println("Unable to create database table: " + e.getMessage());
@@ -81,6 +100,135 @@ public class Database {
             Logger.getLogger(Java_Game_Project.class.getName()).log(Level.SEVERE, null, ex);
         }
         return data;
+    }
+    
+    //starting new game
+    public int startGame(String username){
+        String insertSQL = "INSERT INTO GAMESESSIONS (userid, currentscore, currentstage, enemiesdefeated) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)){
+            pstmt.setString(1, username);
+            pstmt.setInt(2, 0); //score
+            pstmt.setInt(3, 1); //stage
+            pstmt.setInt(4, 0); //enemies defeated
+            
+            int rowsAffected = pstmt.executeUpdate();
+            
+            if(rowsAffected > 0){
+                ResultSet generatedKeys = pstmt.getGeneratedKeys();
+                if(generatedKeys.next()){
+                    int gameId = generatedKeys.getInt(1);
+                    System.out.println("New game started for " + username + " with game ID: " + gameId);
+                    return gameId;
+                }
+            }
+        } catch (SQLException ex){
+            System.out.println("Error starting game session: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return -1;
+    }
+    
+    // updating game in real-time progress
+    public void updateGame(String username, int currentScore, int currentStage, int enemiesDefeated) {
+        String updateSQL = "UPDATE GAMESESSIONS SET currentscore = ?, currentstage = ?, enemiesdefeated = ? " +
+                          "WHERE userid = ? AND gamestatus = 'IN_PROGRESS'";
+        try (PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+            pstmt.setInt(1, currentScore);
+            pstmt.setInt(2, currentStage);
+            pstmt.setInt(3, enemiesDefeated);
+            pstmt.setString(4, username);
+            
+            int rowsUpdated = pstmt.executeUpdate();
+            
+        } catch (SQLException ex) {
+            System.out.println("Error updating game: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
+    //ending game and updating final score
+    public void endGame(String username, int finalScore, String gameStatus) {
+        String endSQL = "UPDATE GAMESESSIONS SET gameend = CURRENT_TIMESTAMP, gamestatus = ? " +
+                              "WHERE userid = ? AND gamestatus = 'IN_PROGRESS'";
+        try (PreparedStatement pstmt = conn.prepareStatement(endSQL)) {
+            pstmt.setString(1, gameStatus);
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            
+            System.out.println("Game session ended for " + username + " with status: " + gameStatus);
+            
+        } catch (SQLException ex) {
+            System.out.println("Error ending game session: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        
+        highScore(username, finalScore);
+    }
+    
+    //updating highscore
+    private void highScore(String username, int newScore){
+        String highscoreSQL = "SELECT score FROM USERINFO WHERE userid = ?";
+        
+        try (PreparedStatement hsStmt = conn.prepareStatement(highscoreSQL)){
+            hsStmt.setString(1,username);
+            ResultSet rs = hsStmt.executeQuery();
+            
+            if(rs.next()){
+                int currentHS = rs.getInt("score");
+                
+                //will update if new score is higher
+                if(newScore > currentHS){
+                    String updateSQL = "UPDATE USERINFO SET score = ? WHERE userid = ?";
+                    
+                    try(PreparedStatement updateStmt = conn.prepareStatement(updateSQL)){
+                        updateStmt.setInt(1,newScore);
+                        updateStmt.setString(2, username);
+                        
+                        int rowsUpdated = updateStmt.executeUpdate();
+                        
+                        if(rowsUpdated > 0){
+                            System.out.println("NEW HIGH SCORE! Updated " + username + "'s high score from " + currentHS + " to " + newScore);
+                        }
+                    }
+                } else {
+                    System.out.println("Score " + newScore + " did not beat current high score");
+                }
+            }
+            rs.close();
+        } catch (SQLException ex){
+            System.out.println("Error updating high score: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
+    public void userStats(String username){
+        String statsSQL = "SELECT " +
+                "COUNT(*) as totalGames, " +
+                "MAX(currentscore) as highScore, " +
+                "MAX(currentstage) as highestStage, " +
+                "SUM(enemiesdefeated) as totalEnemiesDefeated, " +
+                "COUNT(CASE WHEN gamestatus = 'COMPLETED' THEN 1 END) as gamesCompleted " +
+                "FROM GAMESESSIONS WHERE userid = ?";
+        
+        try(PreparedStatement pstmt = conn.prepareStatement(statsSQL)){
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                System.out.println("\n=== PLAYER STATISTICS FOR " + username + " ===");
+                System.out.println("Total Games Played: " + rs.getInt("totalGames"));
+                System.out.println("High Score: " + rs.getInt("highScore"));
+                System.out.println("Highest Stage Reached: " + rs.getInt("highestStage"));
+                System.out.println("Total Enemies Defeated: " + rs.getInt("totalEnemiesDefeated"));
+                System.out.println("Games Completed: " + rs.getInt("gamesCompleted"));
+                System.out.println("=======================================\n");
+            }
+            rs.close();
+            
+        } catch (SQLException ex) {
+            System.out.println("Error getting user stats: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
     
     private boolean checkTableExisting(String newTableName) {

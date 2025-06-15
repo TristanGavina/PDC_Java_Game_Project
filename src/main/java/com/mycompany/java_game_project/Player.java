@@ -41,6 +41,11 @@ public class Player extends GameObjects implements Serializable{
     public int getAttack(){
         return attack;
     }
+    
+    @Override
+    public int getDefense(){
+        return defense;
+    }
 
     @Override
     public String draw() {
@@ -49,7 +54,9 @@ public class Player extends GameObjects implements Serializable{
     
     @Override
     public void takeDamage(int damage){
-        health = Math.max(health - damage, 0); // ensures that hp will not go down 0
+        if (damage > 0) {
+            health = Math.max(health - damage, 0); // ensures that hp will not go below 0
+        }
     }
     
     @Override

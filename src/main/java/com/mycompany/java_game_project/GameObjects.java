@@ -31,7 +31,7 @@ public abstract class GameObjects implements Serializable{
     }
     
     public int getAttack() {
-            return attack - defense;
+            return attack;
         }
     
     public int getDefense() {

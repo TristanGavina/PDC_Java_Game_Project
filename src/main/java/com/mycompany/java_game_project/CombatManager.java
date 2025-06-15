@@ -46,6 +46,7 @@ public class CombatManager implements CombatActions {
         }
         
         int damage = currentEnemy.attack(player);
+        notifyListeners(l -> l.onAction(currentEnemy.getType() + " attacks " + player.getName() + " for " + damage + " damage!"));
         player.defendEnd();
         
         if(player.getHealth() <= 0){
@@ -73,9 +74,10 @@ public class CombatManager implements CombatActions {
         }
         
         int damage = player.attack(currentEnemy);
-        notifyListeners(l -> l.enemyDefeated(currentEnemy));
+        notifyListeners(l -> l.onAction(player.getName() + " attacks " + currentEnemy.getType() + " for " + damage + " damage!"));
         
         if(currentEnemy.getHealth() <= 0){
+            notifyListeners(l -> l.enemyDefeated(currentEnemy));
             finishCombat();
             return;
         }
@@ -91,6 +93,7 @@ public class CombatManager implements CombatActions {
         
         if(!player.isDefending()){
             player.defend();
+            notifyListeners(l -> l.onAction(player.getName() + " takes a defensive stance!"));
             enemyTurn();
         }
     }
@@ -102,7 +105,10 @@ public class CombatManager implements CombatActions {
         }
         
         if(player.getHealth() < player.getMaxHP()){
+            int currentHealth = player.getHealth();
             player.heal();
+            int heal = player.getHealth() - currentHealth;
+            notifyListeners(l -> l.onAction(player.getName() + " heals for " + heal + " HP!"));
             enemyTurn();
         }
     }

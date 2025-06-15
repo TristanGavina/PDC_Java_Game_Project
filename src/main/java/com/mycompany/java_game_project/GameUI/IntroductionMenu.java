@@ -7,31 +7,18 @@ package com.mycompany.java_game_project.GameUI;
 import com.mycompany.java_game_project.Data;
 import com.mycompany.java_game_project.Database;
 import com.mycompany.java_game_project.Encounter;
-import com.mycompany.java_game_project.Interfaces.ICombatLog;
-import com.mycompany.java_game_project.Interfaces.ICombatMenu;
-import com.mycompany.java_game_project.Interfaces.IEncounterUI;
-import com.mycompany.java_game_project.Interfaces.IEndGame;
-import com.mycompany.java_game_project.Interfaces.IGameDetails;
 import com.mycompany.java_game_project.Interfaces.IIntroMenu;
-import com.mycompany.java_game_project.Interfaces.IInvalidHandler;
 import java.io.BufferedReader;
 
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.Serializable;
-import com.mycompany.java_game_project.Interfaces.IStartMenu;
-import com.mycompany.java_game_project.Interfaces.IUserInputs;
 import com.mycompany.java_game_project.Java_Game_Project;
 import com.mycompany.java_game_project.Player;
-import com.mycompany.java_game_project.SaveHandler;
-import com.mycompany.java_game_project.StartGame;
+
 import static com.mycompany.java_game_project.StartGame.game;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -123,7 +110,8 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
                             int option = JOptionPane.showConfirmDialog(
                                 IntroductionMenu.this, 
                                 "Welcome back " + name + "! Your current score is " + data.currentScore + 
-                                ".\nWould you like to continue with this account or start fresh?",
+                                ".\nWould you like to continue with this account or start fresh? " + "\n" +
+                                " YES to continue | NO to start fresh",
                                 "Existing User Found",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE
