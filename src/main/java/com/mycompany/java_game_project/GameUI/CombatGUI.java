@@ -227,13 +227,13 @@ public final class CombatGUI extends JPanel implements CombatListeners, UpdateUI
         String details = """
                          === GAME DETAILS ===
                          Stage: """ + stageManager.getCurrentStage() + "\n"
-                + "Enemies Defeated: " + stageManager.getEnemiesDefeated() + "\n"
-                + "Player: " + player.getName() + "\n"
-                + "Player HP: " + player.getHealth() + "/" + player.getMaxHP() + "\n"
-                + "Player Attack: " + player.getAttack() + "\n"
-                + "Player Defense: " + player.getDefense() + "\n"
-                + "Player Points: " + calcPoint.getTotalScore() + "\n"
-                + "Game ID: " + currentGameId + "\n";
+                        + "Enemies Defeated: " + stageManager.getEnemiesDefeated() + "\n"
+                        + "Player: " + player.getName() + "\n"
+                        + "Player HP: " + player.getHealth() + "/" + player.getMaxHP() + "\n"
+                        + "Player Attack: " + player.getAttack() + "\n"
+                        + "Player Defense: " + player.getDefense() + "\n"
+                        + "Player Points: " + calcPoint.getTotalScore() + "\n"
+                        + "Game ID: " + currentGameId + "\n";
 
         JOptionPane.showMessageDialog(this, details, "Game Details", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -388,13 +388,22 @@ public final class CombatGUI extends JPanel implements CombatListeners, UpdateUI
     @Override
     public void playerDefeated() {
         showCombatLog(player.getName() + " has been DEFEATED!");
-        JOptionPane.showMessageDialog(
+        int choice = JOptionPane.showOptionDialog(
                 this,
-                "You have been defeated",
+                "You have been defeated \nWould you like to...",
                 "GAME OVER!!!",
-                JOptionPane.ERROR_MESSAGE
-        );
-        System.exit(0);
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new String[]{"Return to Menu", "Exit Game"},
+                "Return to Menu"
+            );
+        
+        if(choice == 0){
+            returnToMain();
+        } else {
+            System.exit(0);
+        }
     }
 
     @Override

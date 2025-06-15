@@ -11,15 +11,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import com.mycompany.java_game_project.Interfaces.IStartMenu;
 import com.mycompany.java_game_project.Java_Game_Project;
-import com.mycompany.java_game_project.SaveHandler;
 import com.mycompany.java_game_project.StartGame;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
+
 
 /**
  *

@@ -153,7 +153,10 @@ public class IntroductionMenu extends JPanel implements Serializable, IIntroMenu
         g.drawImage(this.image, 0, 0, getWidth(), getHeight(), this);
     }
     
-    //showing introduction
+    
+    
+    
+    //showing introduction (CUI not used for GUI)
     @Override
     public void displayIntro() {
         try (BufferedReader br = new BufferedReader(new FileReader(INTRO_PATH))) {
